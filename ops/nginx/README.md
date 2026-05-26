@@ -53,6 +53,20 @@ https://apps.ss-promotion.com/omniroute/ -> nginx :8080 -> 127.0.0.1:20128
 
 The OmniRoute dashboard uses root paths like `/_next`, `/login`, `/dashboard`, and `/api/*`, so nginx rewrites those paths under `/omniroute/`. This keeps Cloudflare simple: one HTTP hostname points to nginx, and nginx owns the internal service map.
 
+The config also keeps a narrow set of root compatibility routes for browser-managed OmniRoute assets and first-login setup:
+
+```text
+/_next/*
+/manifest.webmanifest
+/favicon.svg
+/icon-*
+/apple-touch-icon.png
+/home
+/api/settings/require-login
+```
+
+Avoid broad root `/api/*` proxying to OmniRoute because Hermes currently owns several root dashboard API paths on the same hostname.
+
 For future routers, add a new nginx path block instead of a new Cloudflare Tunnel hostname unless the upstream UI cannot be made path-safe:
 
 ```text

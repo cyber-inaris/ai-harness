@@ -92,6 +92,8 @@ Gateway:
 ```bash
 curl -I http://127.0.0.1:8080/omniroute/
 curl -I https://apps.ss-promotion.com/omniroute/
+curl -I https://apps.ss-promotion.com/omniroute/dashboard
+curl -I https://apps.ss-promotion.com/omniroute/_next/static/chunks/webpack-63849d10ecdf4bd8.js
 ```
 
 OpenAI-compatible API:
@@ -102,6 +104,30 @@ curl http://127.0.0.1:20128/v1/models \
 ```
 
 The API may return an auth or setup error until providers/API keys are configured. That is acceptable for the first install; the service must still respond.
+
+## First Login
+
+If the login endpoint returns this response:
+
+```json
+{"error":"No password configured. Complete onboarding first.","needsSetup":true}
+```
+
+set the initial dashboard password through OmniRoute's setup endpoint from the server:
+
+```bash
+curl -X POST http://127.0.0.1:20128/api/settings/require-login \
+  -H "Content-Type: application/json" \
+  --data '{"requireLogin":true,"password":"CHANGEME"}'
+```
+
+Then log in at:
+
+```text
+https://apps.ss-promotion.com/omniroute/
+```
+
+Change the temporary password immediately in the OmniRoute settings.
 
 ## Web UI Path Routing
 
@@ -127,6 +153,18 @@ https://apps.ss-promotion.com/omniroute/
 ```
 
 The nginx config rewrites OmniRoute's root-level Next.js asset, dashboard, login, and API paths so they stay under `/omniroute/`.
+
+Some browser-managed assets may still be requested from root, especially after cached HTML or manifest responses. The nginx config includes narrow compatibility routes for:
+
+```text
+/_next/*
+/manifest.webmanifest
+/favicon.svg
+/icon-*
+/apple-touch-icon.png
+/home
+/api/settings/require-login
+```
 
 This is more fragile than a dedicated hostname because it depends on upstream HTML/JavaScript path shapes. If OmniRoute changes its frontend output and the dashboard breaks, first update `ops/nginx/ai-harness.conf`; only add a dedicated hostname if path rewriting becomes too expensive to maintain.
 
