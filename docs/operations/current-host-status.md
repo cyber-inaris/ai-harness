@@ -243,6 +243,8 @@ telegram: configured for the allowed user only
 personality: technical
 terminal cwd: /opt/ai-harness/repo
 streaming.enabled: false
+browser tools: enabled
+git checkout: /opt/ai-harness/repo
 ```
 
 Project-specific Hermes files:
@@ -270,3 +272,12 @@ Telegram secrets are stored only in:
 ```
 
 Do not print or commit the Telegram bot token.
+
+GitHub SSH key for the server has been generated at:
+
+```text
+/home/ai/.ssh/github_cyber_inaris
+/home/ai/.ssh/github_cyber_inaris.pub
+```
+
+Push/pull remains pending until the public key is added to GitHub.

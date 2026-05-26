@@ -15,6 +15,7 @@ persona: /home/ai/.hermes/SOUL.md
 working directory: /opt/ai-harness/repo
 personality: technical
 streaming.enabled: false
+browser tools: enabled
 ```
 
 ## Services
@@ -76,4 +77,48 @@ ai-harness-ops
 omniroute-provider-setup
 reseller-benchmark
 hermes-vps-admin
+```
+
+## Browser Tools
+
+Playwright Chromium is installed for Hermes:
+
+```text
+/home/ai/.cache/ms-playwright/
+```
+
+`hermes doctor` should show:
+
+```text
+Playwright Chromium: ok
+browser: available
+```
+
+## Git Access
+
+The server copy at `/opt/ai-harness/repo` is a real git checkout.
+
+Local git operations are available:
+
+```bash
+cd /opt/ai-harness/repo
+git status --short
+git log -1 --oneline
+```
+
+GitHub SSH alias is configured for the `ai` user:
+
+```text
+Host github-cyber-inaris
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/github_cyber_inaris
+  IdentitiesOnly yes
+```
+
+The public key must be added to GitHub before push/pull works:
+
+```bash
+cat /home/ai/.ssh/github_cyber_inaris.pub
+ssh -T github-cyber-inaris
 ```
