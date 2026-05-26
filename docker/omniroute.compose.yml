@@ -1,0 +1,18 @@
+services:
+  omniroute:
+    image: diegosouzapw/omniroute:latest
+    container_name: ai-harness-omniroute
+    restart: unless-stopped
+    stop_grace_period: 40s
+    env_file:
+      - /opt/ai-harness/secrets/omniroute.env
+    ports:
+      - "127.0.0.1:20128:20128"
+    volumes:
+      - /var/lib/ai-harness/router/omniroute:/app/data
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"require('http').get('http://127.0.0.1:20128/v1/models', res => process.exit(res.statusCode < 500 ? 0 : 1)).on('error', () => process.exit(1))\""]
+      interval: 30s
+      timeout: 5s
+      retries: 10
+      start_period: 60s

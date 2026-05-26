@@ -45,6 +45,7 @@ Listening ports:
 8080  nginx, intended Cloudflare/ngrok origin
 3389  xrdp
 9119  Hermes dashboard on 127.0.0.1 only
+20128 OmniRoute on 127.0.0.1 only
 ```
 
 ## Web Gateway
@@ -88,6 +89,22 @@ https://apps.ss-promotion.com/hermes/
 ```
 
 The dashboard also uses root-level `/assets/*` and `/api/*` paths, so nginx currently proxies those root paths to Hermes as well. Move Hermes to a dedicated hostname if that becomes a conflict.
+
+OmniRoute route:
+
+```text
+https://omniroute.ss-promotion.com/
+  -> Cloudflare Tunnel
+  -> nginx :8080
+  -> http://127.0.0.1:20128/
+
+https://apps.ss-promotion.com/v1/
+  -> Cloudflare Tunnel
+  -> nginx :8080
+  -> http://127.0.0.1:20128/v1/
+```
+
+`omniroute.ss-promotion.com` must be added as a Cloudflare Tunnel public hostname pointing to `HTTP localhost:8080`. Path routing under `apps.ss-promotion.com/omniroute/` is not enough for the full UI because OmniRoute uses root-level `/_next`, `/login`, `/dashboard`, and `/api/*` paths.
 
 ## Host Layout
 
@@ -139,3 +156,4 @@ The script is idempotent for the MVP setup: packages, directories, secret file p
 - Keep real secrets out of git and under `/opt/ai-harness/secrets`.
 - Keep Docker service images disabled/placeholders until router/benchmark images are final.
 - Run Hermes dashboard as a host-level systemd service for now.
+- Run OmniRoute as the first Docker Compose router target.
