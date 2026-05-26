@@ -4,3 +4,12 @@ Helper scripts for VPS setup, provider checks, and benchmark runs.
 
 Scripts should be safe to read before running and should not embed real secrets.
 
+Current scripts:
+
+```text
+deploy-host.sh                 # base host setup
+install-hermes.sh              # Hermes install/service setup
+install-omniroute.sh           # OmniRoute install/service setup
+install-langgraph-runtime.sh   # LangGraph task runtime setup
+agent-task                     # stable wrapper Hermes should call
+```

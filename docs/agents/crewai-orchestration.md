@@ -2,9 +2,17 @@
 
 ## Purpose
 
-`ai-harness` will use CrewAI as the first multi-agent orchestration layer.
+`ai-harness` originally planned CrewAI as the first multi-agent orchestration layer.
 
-Hermes remains the user-facing agent in Telegram. CrewAI runs the specialist agent team behind Hermes.
+Current decision: LangGraph is the primary runtime. CrewAI may be used later as an optional worker backend inside a LangGraph node.
+
+See:
+
+```text
+docs/agents/langgraph-runtime.md
+```
+
+Hermes remains the user-facing agent in Telegram. LangGraph runs durable task workflows behind Hermes. CrewAI can still run specialist crews for bounded tasks if that proves useful.
 
 The goal:
 

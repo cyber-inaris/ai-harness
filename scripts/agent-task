@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+VENV_DIR="${VENV_DIR:-/opt/ai-harness/venvs/langgraph-runtime}"
+
+if [[ ! -x "${VENV_DIR}/bin/ai-harness-agent-task" ]]; then
+  echo "LangGraph runtime is not installed. Run: sudo /opt/ai-harness/repo/scripts/install-langgraph-runtime.sh" >&2
+  exit 127
+fi
+
+exec "${VENV_DIR}/bin/ai-harness-agent-task" "$@"
+

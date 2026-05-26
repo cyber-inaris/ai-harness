@@ -1,6 +1,11 @@
 # Packages
 
-Reserved for future code packages.
+Custom code lives here when docs and shell scripts are no longer enough.
 
-The first version of `ai-harness` is ops-first: docs, configs, scripts, and benchmark suites. Add code here only when a custom worker, API, scoring package, or router adapter becomes necessary.
+Current package:
 
+```text
+langgraph_runtime
+```
+
+It provides the first minimal LangGraph-backed task runtime for Hermes.

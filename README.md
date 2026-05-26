@@ -55,6 +55,7 @@ Relevant docs:
 
 - [Ubuntu host setup](docs/vps/ubuntu-setup.md)
 - [Hermes runtime setup](docs/agents/hermes-runtime-setup.md)
+- [LangGraph agent runtime](docs/agents/langgraph-runtime.md)
 - [Tailscale + Cloudflare Access notes](docs/networking/tailscale-cloudflare-access.md)
 - [nginx gateway template](ops/nginx/ai-harness.conf)
 - [host deploy script](scripts/deploy-host.sh)

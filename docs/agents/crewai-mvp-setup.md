@@ -2,7 +2,17 @@
 
 ## Purpose
 
-This runbook describes the first practical CrewAI setup for `ai-harness`.
+This runbook is retained as a CrewAI reference, but it is no longer the primary MVP path.
+
+Current primary MVP path:
+
+```text
+docs/agents/langgraph-runtime.md
+```
+
+CrewAI can be revisited as an optional worker backend after the LangGraph task runtime is stable.
+
+This runbook describes the first practical CrewAI setup for `ai-harness` if that optional backend is needed.
 
 The MVP goal is intentionally small:
 
