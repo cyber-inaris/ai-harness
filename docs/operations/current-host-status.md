@@ -172,3 +172,101 @@ The script is idempotent for the MVP setup: packages, directories, secret file p
 - Keep Docker service images disabled/placeholders until router/benchmark images are final.
 - Run Hermes dashboard as a host-level systemd service for now.
 - Run OmniRoute as the first Docker Compose router target.
+
+## OmniRoute Provider State
+
+Last verified: 2026-05-27
+
+FreeModel is configured as an OpenAI-compatible provider in OmniRoute:
+
+```text
+provider: FreeModel
+prefix: free-mod
+base_url: https://api.freemodel.dev/v1
+connection: TestKey
+status: active
+```
+
+Imported OmniRoute model ids:
+
+```text
+free-mod/gpt-5.5
+free-mod/gpt-5.4
+free-mod/gpt-5.4-mini
+free-mod/gpt-5.3-codex
+```
+
+Verified path:
+
+```text
+Hermes -> http://127.0.0.1:20128/v1 -> OmniRoute -> FreeModel
+```
+
+Hermes model config:
+
+```text
+provider: custom
+base_url: http://127.0.0.1:20128/v1
+model.default: free-mod/gpt-5.5
+```
+
+LightningZeus is also configured in OmniRoute:
+
+```text
+provider: LightningZeus
+prefix: lightningzeus
+base_url: https://lightningzeus.com/v1
+connection: TestKey
+status: active
+```
+
+Imported LightningZeus model ids:
+
+```text
+lightningzeus/claude-opus-4-6
+lightningzeus/claude-opus-4.6
+lightningzeus/cursorlm
+```
+
+Use `stream: false` for LightningZeus through OmniRoute. Streaming requests returned `STREAM_EARLY_EOF` during verification.
+
+## Hermes Runtime State
+
+Last verified: 2026-05-27
+
+Hermes is configured as the Telegram-facing operational agent for this host:
+
+```text
+dashboard service: hermes-dashboard.service
+gateway service: hermes-gateway.service
+telegram: configured for the allowed user only
+personality: technical
+terminal cwd: /opt/ai-harness/repo
+streaming.enabled: false
+```
+
+Project-specific Hermes files:
+
+```text
+repo persona: hermes/SOUL.md
+runtime persona: /home/ai/.hermes/SOUL.md
+repo skills: hermes/skills/ai-harness/
+runtime skills: /home/ai/.hermes/skills/ai-harness/
+```
+
+Enabled local project skills:
+
+```text
+ai-harness-ops
+omniroute-provider-setup
+reseller-benchmark
+hermes-vps-admin
+```
+
+Telegram secrets are stored only in:
+
+```text
+/home/ai/.hermes/.env
+```
+
+Do not print or commit the Telegram bot token.

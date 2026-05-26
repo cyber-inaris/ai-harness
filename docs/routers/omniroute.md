@@ -105,6 +105,104 @@ curl http://127.0.0.1:20128/v1/models \
 
 The API may return an auth or setup error until providers/API keys are configured. That is acceptable for the first install; the service must still respond.
 
+## FreeModel Provider
+
+Verified on 2026-05-27:
+
+```text
+Provider name: FreeModel
+Provider type: OpenAI compatible
+Base URL: https://api.freemodel.dev/v1
+Dashboard prefix: free-mod
+OmniRoute model ids:
+  free-mod/gpt-5.5
+  free-mod/gpt-5.4
+  free-mod/gpt-5.4-mini
+  free-mod/gpt-5.3-codex
+```
+
+Direct FreeModel `/v1/models` returned these upstream models:
+
+```text
+gpt-5.5
+gpt-5.4
+gpt-5.4-mini
+gpt-5.3-codex
+```
+
+After adding the provider connection in the OmniRoute dashboard, sync models from the server:
+
+```bash
+OMNIROUTE_API_KEY="$(sudo awk -F= '/^OMNIROUTE_API_KEY=/ {print $2}' /opt/ai-harness/secrets/omniroute.env)"
+
+curl -X POST \
+  -H "Authorization: Bearer ${OMNIROUTE_API_KEY}" \
+  "http://127.0.0.1:20128/api/providers/<connection-id>/sync-models?mode=import"
+```
+
+Then verify:
+
+```bash
+curl http://127.0.0.1:20128/v1/models \
+  -H "Authorization: Bearer ${OMNIROUTE_API_KEY}"
+
+curl http://127.0.0.1:20128/v1/chat/completions \
+  -H "Authorization: Bearer ${OMNIROUTE_API_KEY}" \
+  -H "Content-Type: application/json" \
+  --data '{"model":"free-mod/gpt-5.5","messages":[{"role":"user","content":"Return exactly ok"}],"max_tokens":8}'
+```
+
+Use the OpenAI Chat Completions path for agents:
+
+```text
+base_url: http://127.0.0.1:20128/v1
+model: free-mod/gpt-5.5
+```
+
+The direct FreeModel Responses API can work, but OmniRoute's `/v1/responses` path returned `STREAM_EARLY_EOF` during this verification. Keep Hermes and coding agents on `/v1/chat/completions` unless this is retested.
+
+## LightningZeus Provider
+
+Verified on 2026-05-27:
+
+```text
+Provider name: LightningZeus
+Provider type: OpenAI compatible
+Base URL: https://lightningzeus.com/v1
+Dashboard prefix: lightningzeus
+OmniRoute model ids:
+  lightningzeus/claude-opus-4-6
+  lightningzeus/claude-opus-4.6
+  lightningzeus/cursorlm
+```
+
+The local `ai-testing-toolkit` key is stored as:
+
+```text
+/Users/alex/Work/GitHub/ai-testing-toolkit/api/.env
+LIGHTNINGZEUS_API_KEY
+```
+
+Do not copy the key into git. OmniRoute stores the provider connection in its own runtime database after adding it through the API or dashboard.
+
+Direct LightningZeus `/v1/chat/completions` works with both streaming and non-streaming requests. Through OmniRoute, non-streaming requests work:
+
+```bash
+curl http://127.0.0.1:20128/v1/chat/completions \
+  -H "Authorization: Bearer ${OMNIROUTE_API_KEY}" \
+  -H "Content-Type: application/json" \
+  --data '{"model":"lightningzeus/claude-opus-4.6","messages":[{"role":"user","content":"Return exactly ok"}],"max_tokens":8,"stream":false}'
+```
+
+OmniRoute streaming requests to LightningZeus returned `STREAM_EARLY_EOF` during verification. For agents and benchmarks, set `stream: false` when using LightningZeus through OmniRoute until this is retested or fixed upstream.
+
+Prior local benchmark notes:
+
+```text
+claude-opus-4.6 passed 5/5 smoke tests, but reported high token usage.
+cursorlm passed 3/5 smoke tests and had weaker model identity signals.
+```
+
 ## First Login
 
 If the login endpoint returns this response:
