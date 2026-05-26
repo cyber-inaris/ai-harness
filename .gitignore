@@ -2,6 +2,7 @@
 .DS_Store
 .idea/
 .vscode/
+.superpowers/
 *.swp
 *.swo
 
@@ -35,4 +36,3 @@ tmp/
 # Local Docker/runtime state
 .docker/
 docker-data/
-

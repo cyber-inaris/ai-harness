@@ -35,10 +35,28 @@ configs/examples/     Safe example configs, no secrets
 scripts/              Setup and benchmark helper scripts
 benchmarks/suites/    Benchmark suite definitions
 benchmarks/results/   Local benchmark output, ignored by git
+docker/               Docker Compose skeletons
 secrets/              Local/encrypted secrets only, ignored by git
 ops/                  Systemd, nginx, firewall, backup templates
 packages/             Future code packages if needed
 ```
+
+## Current Host MVP
+
+The current practical setup is:
+
+```text
+SSH/admin: Tailscale -> ai@host
+Web:       Cloudflare Tunnel -> nginx :8080 -> local services
+RDP/XFCE:  Tailscale IP:3389
+```
+
+Relevant docs:
+
+- [Ubuntu host setup](docs/vps/ubuntu-setup.md)
+- [Tailscale + Cloudflare Access notes](docs/networking/tailscale-cloudflare-access.md)
+- [nginx gateway template](ops/nginx/ai-harness.conf)
+- [host deploy script](scripts/deploy-host.sh)
 
 ## Safety Rules
 
@@ -57,4 +75,3 @@ packages/             Future code packages if needed
 5. Store real secrets outside git.
 6. Run smoke, identity, coding, and long-context benchmarks.
 7. Use scoring docs to decide whether the model is production, burst, sandbox, or avoid.
-
