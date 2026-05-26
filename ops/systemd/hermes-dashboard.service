@@ -1,0 +1,16 @@
+[Unit]
+Description=Hermes Agent Dashboard
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ai
+WorkingDirectory=/home/ai/.hermes/hermes-agent
+Environment=PATH=/home/ai/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ExecStart=/home/ai/.local/bin/hermes dashboard --host 127.0.0.1 --port 9119 --no-open
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

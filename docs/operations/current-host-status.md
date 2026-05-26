@@ -34,6 +34,7 @@ docker
 xrdp
 tailscaled
 cloudflared
+hermes-dashboard
 ```
 
 Listening ports:
@@ -43,6 +44,7 @@ Listening ports:
 80    nginx
 8080  nginx, intended Cloudflare/ngrok origin
 3389  xrdp
+9119  Hermes dashboard on 127.0.0.1 only
 ```
 
 ## Web Gateway
@@ -75,6 +77,17 @@ nginx routes are defined in:
 /etc/nginx/sites-available/ai-harness
 /opt/ai-harness/repo/ops/nginx/ai-harness.conf
 ```
+
+Hermes dashboard route:
+
+```text
+https://apps.ss-promotion.com/hermes/
+  -> Cloudflare Tunnel
+  -> nginx :8080
+  -> http://127.0.0.1:9119/
+```
+
+The dashboard also uses root-level `/assets/*` and `/api/*` paths, so nginx currently proxies those root paths to Hermes as well. Move Hermes to a dedicated hostname if that becomes a conflict.
 
 ## Host Layout
 
@@ -124,4 +137,5 @@ The script is idempotent for the MVP setup: packages, directories, secret file p
 - Use Cloudflare Tunnel for public web ingress.
 - Use nginx as the single local gateway.
 - Keep real secrets out of git and under `/opt/ai-harness/secrets`.
-- Keep Docker service images disabled/placeholders until Hermes/router choices are final.
+- Keep Docker service images disabled/placeholders until router/benchmark images are final.
+- Run Hermes dashboard as a host-level systemd service for now.

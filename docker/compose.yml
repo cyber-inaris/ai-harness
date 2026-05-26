@@ -5,16 +5,6 @@ services:
     ports:
       - "18080:80"
 
-  # Future service slots. Keep real router/agent images in a local override file
-  # until the exact tools are chosen.
-  hermes:
-    image: ghcr.io/example/hermes:placeholder
-    profiles: ["disabled"]
-    env_file:
-      - /opt/ai-harness/secrets/hermes.env
-    ports:
-      - "127.0.0.1:3000:3000"
-
   router:
     image: ghcr.io/example/router:placeholder
     profiles: ["disabled"]

@@ -23,7 +23,7 @@ It intentionally uses disabled placeholder services until the exact Hermes/route
 The nginx gateway expects services on local-only ports:
 
 ```text
-Hermes:     127.0.0.1:3000
+Hermes UI:  127.0.0.1:9119
 Router:     127.0.0.1:4000
 Benchmarks: 127.0.0.1:5000
 Webhooks:   127.0.0.1:7000

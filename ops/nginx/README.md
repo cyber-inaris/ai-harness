@@ -12,7 +12,7 @@ The host exposes one nginx gateway on ports `80` and `8080`.
 
 ```text
 /healthz      -> nginx health check
-/hermes/      -> 127.0.0.1:3000
+/hermes/      -> 127.0.0.1:9119
 /router/      -> 127.0.0.1:4000
 /benchmarks/  -> 127.0.0.1:5000
 /cockpit/     -> 127.0.0.1:9090
@@ -20,3 +20,13 @@ The host exposes one nginx gateway on ports `80` and `8080`.
 ```
 
 Cloudflare Tunnel or ngrok should point at `http://localhost:8080`.
+
+## Hermes Dashboard Caveat
+
+Hermes dashboard currently emits absolute root paths (`/assets/...`, `/api/...`, etc.). The MVP config proxies those root paths to Hermes so the dashboard works under:
+
+```text
+https://apps.ss-promotion.com/hermes/
+```
+
+If this conflicts with other applications, move Hermes to a dedicated hostname and proxy `/` there.
