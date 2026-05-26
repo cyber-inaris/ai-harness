@@ -11,14 +11,19 @@ Reverse proxy templates and notes. Admin services should be private by default a
 The host exposes one nginx gateway on ports `80` and `8080`.
 
 ```text
-/healthz      -> nginx health check
-/hermes/      -> 127.0.0.1:9119
-/router/      -> 127.0.0.1:20128
-/omniroute/   -> redirect to omniroute.ss-promotion.com
-/v1/          -> 127.0.0.1:20128/v1
-/benchmarks/  -> 127.0.0.1:5000
-/cockpit/     -> 127.0.0.1:9090
-/webhooks/    -> 127.0.0.1:7000
+apps.ss-promotion.com/healthz       -> nginx health check
+apps.ss-promotion.com/hermes/       -> 127.0.0.1:9119
+apps.ss-promotion.com/router/       -> 127.0.0.1:20128
+apps.ss-promotion.com/omniroute/    -> redirect to omniroute.ss-promotion.com
+apps.ss-promotion.com/v1/           -> 127.0.0.1:20128/v1
+apps.ss-promotion.com/benchmarks/   -> 127.0.0.1:5000
+apps.ss-promotion.com/cockpit/      -> 127.0.0.1:9090
+apps.ss-promotion.com/webhooks/     -> 127.0.0.1:7000
+
+hermes.ss-promotion.com/            -> 127.0.0.1:9119
+omniroute.ss-promotion.com/         -> 127.0.0.1:20128
+benchmark.ss-promotion.com/         -> 127.0.0.1:5000
+benchmarks.ss-promotion.com/        -> 127.0.0.1:5000
 ```
 
 Cloudflare Tunnel or ngrok should point HTTP hostnames at `http://localhost:8080`.
@@ -57,7 +62,9 @@ Cloudflare Tunnel should have both public hostnames pointing to the same local o
 
 ```text
 apps.ss-promotion.com      -> HTTP localhost:8080
+hermes.ss-promotion.com    -> HTTP localhost:8080
 omniroute.ss-promotion.com -> HTTP localhost:8080
+benchmark.ss-promotion.com -> HTTP localhost:8080
 ```
 
 For future routers, add a new nginx path block when the UI is path-safe. Use a dedicated hostname when the upstream app assumes root paths:

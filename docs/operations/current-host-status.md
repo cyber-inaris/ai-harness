@@ -50,10 +50,13 @@ Listening ports:
 
 ## Web Gateway
 
-Public hostname:
+Public hostnames:
 
 ```text
 https://apps.ss-promotion.com
+https://hermes.ss-promotion.com
+https://omniroute.ss-promotion.com
+https://benchmark.ss-promotion.com
 ```
 
 Current checks:
@@ -83,6 +86,7 @@ Hermes dashboard route:
 
 ```text
 https://apps.ss-promotion.com/hermes/
+https://hermes.ss-promotion.com/
   -> Cloudflare Tunnel
   -> nginx :8080
   -> http://127.0.0.1:9119/
@@ -108,10 +112,14 @@ Cloudflare needs these web hostnames pointing to the same origin:
 
 ```text
 apps.ss-promotion.com      -> HTTP localhost:8080
+hermes.ss-promotion.com    -> HTTP localhost:8080
 omniroute.ss-promotion.com -> HTTP localhost:8080
+benchmark.ss-promotion.com -> HTTP localhost:8080
 ```
 
 OmniRoute uses root-level Next.js paths such as `/_next`, `/login`, `/dashboard`, `/home`, and `/api/*`. It should own `/` on `omniroute.ss-promotion.com`; path routing under `apps.ss-promotion.com/omniroute/` is only a redirect fallback.
+
+Benchmark hostname currently routes to `127.0.0.1:5000`. It returns `502` until a benchmark UI/API service is started on that port.
 
 ## Host Layout
 
