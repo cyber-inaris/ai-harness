@@ -1,0 +1,38 @@
+# OS/editor noise
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Runtime secrets and local environment
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p8
+*.p12
+secrets/*
+!secrets/README.md
+!secrets/.gitignore
+
+# Dependency folders
+node_modules/
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Benchmark/runtime output
+benchmarks/results/*
+!benchmarks/results/.gitkeep
+data/
+logs/
+tmp/
+*.log
+
+# Local Docker/runtime state
+.docker/
+docker-data/
+

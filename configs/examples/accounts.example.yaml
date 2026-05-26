@@ -1,0 +1,16 @@
+# Example account metadata. Do not store real secrets in this file.
+accounts:
+  - id: freemodel-main
+    provider_id: freemodel
+    secret_ref: FREEMODEL_API_KEY
+    status: active
+    quota_model: token
+    notes: Real key should live in .env, sops, vault, or server-local secrets.
+
+  - id: lightningzeus-main
+    provider_id: lightningzeus
+    secret_ref: LIGHTNINGZEUS_API_KEY
+    status: testing
+    quota_model: unknown
+    notes: Validate token overhead and billing dashboard before production use.
+

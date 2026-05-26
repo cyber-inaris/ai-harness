@@ -1,0 +1,22 @@
+# Example provider metadata. Do not put API keys here.
+providers:
+  - id: freemodel
+    name: FreeModel
+    base_url: https://api.freemodel.dev/v1
+    api_format: openai-compatible
+    models:
+      - id: gpt-5.5
+        tags: [frontier, coding, benchmark]
+    secret_ref: FREEMODEL_API_KEY
+
+  - id: lightningzeus
+    name: LightningZeus
+    base_url: https://lightningzeus.com/v1
+    api_format: openai-compatible
+    models:
+      - id: claude-opus-4.6
+        tags: [opus, coding, benchmark]
+      - id: cursorlm
+        tags: [coding, sandbox]
+    secret_ref: LIGHTNINGZEUS_API_KEY
+

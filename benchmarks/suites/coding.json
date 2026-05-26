@@ -1,0 +1,26 @@
+{
+  "id": "coding",
+  "name": "Coding Benchmarks",
+  "description": "Small coding tasks relevant to vibe-coding workflows.",
+  "tests": [
+    {
+      "id": "coding-palindrome",
+      "name": "Python Palindrome Function",
+      "prompt": "Write a Python function to check if a string is a palindrome. Include two examples.",
+      "expected_behavior": "correct_code"
+    },
+    {
+      "id": "coding-debug-js",
+      "name": "JavaScript Bug Explanation",
+      "prompt": "Find the bug and provide a fixed version:\\nfunction sum(arr) { return arr.reduce((a,b) => a+b); }\\nsum([1,2,\"3\"])",
+      "expected_behavior": "explain_and_fix"
+    },
+    {
+      "id": "coding-sql-duplicates",
+      "name": "SQL Duplicate Emails",
+      "prompt": "Write a SQL query to find duplicate emails in a users table.",
+      "expected_behavior": "correct_query"
+    }
+  ]
+}
+

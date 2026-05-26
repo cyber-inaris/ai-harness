@@ -1,0 +1,17 @@
+{
+  "id": "long-context",
+  "name": "Long Context Checks",
+  "description": "Context-window and recall tests. Scripts should generate the long filler text at runtime.",
+  "tests": [
+    {
+      "id": "long-context-secret-word",
+      "name": "Secret Word Recall",
+      "template": "The secret word is BANANA. {filler}\\n\\nWhat was the secret word mentioned at the beginning?",
+      "expected_behavior": "recall_banana",
+      "runtime_parameters": {
+        "filler_token_target": 10000
+      }
+    }
+  ]
+}
+

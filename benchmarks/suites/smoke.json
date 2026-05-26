@@ -1,0 +1,14 @@
+{
+  "id": "smoke",
+  "name": "Smoke Tests",
+  "description": "Basic provider/model availability checks.",
+  "tests": [
+    {
+      "id": "smoke-hello",
+      "name": "Simple Completion",
+      "prompt": "Reply with exactly: hello",
+      "expected_behavior": "short_exact_or_near_exact"
+    }
+  ]
+}
+

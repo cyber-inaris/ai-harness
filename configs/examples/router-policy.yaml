@@ -1,0 +1,23 @@
+# Example router policy. Adapt to the selected router.
+routes:
+  production:
+    preferred:
+      - provider_id: freemodel
+        model: gpt-5.5
+    fallback:
+      - provider_id: lightningzeus
+        model: claude-opus-4.6
+    avoid:
+      - provider_id: lightningzeus
+        model: cursorlm
+        reason: Requires more testing before production use.
+
+  sandbox:
+    allow_all_testing_models: true
+
+selection_rules:
+  min_quality_score: 70
+  min_identity_confidence: 60
+  max_timeout_rate_percent: 5
+  require_streaming_for_coding: true
+

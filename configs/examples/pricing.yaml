@@ -1,0 +1,24 @@
+# Example pricing/quota metadata. Values here are placeholders for planning.
+pricing:
+  freemodel:
+    type: token
+    currency: USD
+    notes: Fill with real input/output token prices after checking dashboard.
+
+  lightningzeus:
+    type: unknown
+    currency: USD
+    notes: Verify whether quota/billing follows reported API tokens, requests, or account plan limits.
+
+  example_daily_quota_reseller:
+    type: requests_per_day
+    daily_request_limit: 1000
+    monthly_price: 30
+    active_days_per_month: 25
+    notes: Normalize to effective coding tasks per day, not only price per token.
+
+  example_account_seller:
+    type: account_sale
+    account_price: 10
+    notes: Track successful tasks before ban and calculate ban-adjusted cost per task.
+
