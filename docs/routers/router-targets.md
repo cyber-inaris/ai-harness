@@ -34,17 +34,36 @@ OmniRoute UI/API:
   local:  http://127.0.0.1:20128
   API:    http://127.0.0.1:20128/v1
   public API: https://apps.ss-promotion.com/v1
-  public UI:  https://omniroute.ss-promotion.com/
+  public UI:  https://apps.ss-promotion.com/omniroute/
 
 Generic router path:
   public: https://apps.ss-promotion.com/router/
 ```
 
-If a router dashboard requires root-level assets or WebSocket paths that conflict with Hermes, prefer a dedicated hostname:
+Cloudflare should expose one HTTP hostname for the MVP:
 
 ```text
-omniroute.ss-promotion.com -> Cloudflare Tunnel -> http://localhost:8080 -> nginx -> http://localhost:20128
-cockpit.ss-promotion.com   -> cockpit service
+apps.ss-promotion.com -> Cloudflare Tunnel -> http://localhost:8080 -> nginx
 ```
 
-OmniRoute already needs the dedicated-hostname pattern because its Web UI uses root paths such as `/_next`, `/login`, `/dashboard`, and `/api/*`.
+nginx owns service routing behind that single hostname. OmniRoute is a Next.js app that expects root paths such as `/_next`, `/login`, `/dashboard`, and `/api/*`, so the nginx config rewrites those paths under `/omniroute/`.
+
+Dedicated hostnames remain a fallback if an upstream UI update breaks path rewriting, but they are not part of the MVP routing policy.
+
+## Adding More Routers
+
+Do not add a Cloudflare Tunnel hostname for every router during the MVP. Add nginx path routes behind the existing `apps.ss-promotion.com` gateway.
+
+Recommended pattern:
+
+```text
+/omniroute/       -> OmniRoute dashboard
+/router-cockpit/  -> Cockpit-style router dashboard, if added
+/router-name/     -> another router dashboard
+
+/v1/              -> default active OpenAI-compatible router
+/v1-omniroute/    -> direct OmniRoute API, if parallel testing needs it
+/v1-router-name/  -> direct API for another router, if needed
+```
+
+Use `/v1/` as the stable endpoint for agents. Switch its upstream when the chosen default router changes. Keep router-specific API paths only for testing, fallback, and benchmarks.

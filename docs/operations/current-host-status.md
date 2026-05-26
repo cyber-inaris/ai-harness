@@ -93,7 +93,7 @@ The dashboard also uses root-level `/assets/*` and `/api/*` paths, so nginx curr
 OmniRoute route:
 
 ```text
-https://omniroute.ss-promotion.com/
+https://apps.ss-promotion.com/omniroute/
   -> Cloudflare Tunnel
   -> nginx :8080
   -> http://127.0.0.1:20128/
@@ -104,7 +104,9 @@ https://apps.ss-promotion.com/v1/
   -> http://127.0.0.1:20128/v1/
 ```
 
-`omniroute.ss-promotion.com` must be added as a Cloudflare Tunnel public hostname pointing to `HTTP localhost:8080`. Path routing under `apps.ss-promotion.com/omniroute/` is not enough for the full UI because OmniRoute uses root-level `/_next`, `/login`, `/dashboard`, and `/api/*` paths.
+Cloudflare only needs the single web hostname `apps.ss-promotion.com` pointing to `HTTP localhost:8080`. nginx routes all HTTP services behind it.
+
+OmniRoute uses root-level Next.js paths such as `/_next`, `/login`, `/dashboard`, and `/api/*`, so nginx rewrites those paths under `/omniroute/`. If the upstream UI changes and the rewrite stops working, update `ops/nginx/ai-harness.conf` before adding another public hostname.
 
 ## Host Layout
 

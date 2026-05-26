@@ -45,10 +45,18 @@ Use:
 /v1/        as the OpenAI-compatible API path
 ```
 
-OmniRoute's full dashboard should use a dedicated hostname:
+OmniRoute currently runs under the shared web hostname:
 
 ```text
-omniroute.ss-promotion.com -> nginx :8080 -> 127.0.0.1:20128
+https://apps.ss-promotion.com/omniroute/ -> nginx :8080 -> 127.0.0.1:20128
 ```
 
-Reason: the OmniRoute dashboard uses root paths like `/_next`, `/login`, `/dashboard`, and `/api/*`, which conflict with Hermes on the shared `apps.ss-promotion.com` hostname.
+The OmniRoute dashboard uses root paths like `/_next`, `/login`, `/dashboard`, and `/api/*`, so nginx rewrites those paths under `/omniroute/`. This keeps Cloudflare simple: one HTTP hostname points to nginx, and nginx owns the internal service map.
+
+For future routers, add a new nginx path block instead of a new Cloudflare Tunnel hostname unless the upstream UI cannot be made path-safe:
+
+```text
+/router-name/ -> router dashboard
+/router-name/v1/ or /v1-router-name/ -> router API if needed
+/v1/ -> currently selected default OpenAI-compatible API
+```

@@ -14,7 +14,7 @@ Public dashboard/API routing goes through the existing Cloudflare/nginx gateway:
 
 ```text
 https://apps.ss-promotion.com/v1/
-https://omniroute.ss-promotion.com/
+https://apps.ss-promotion.com/omniroute/
 ```
 
 ## Upstream References
@@ -92,7 +92,6 @@ Gateway:
 ```bash
 curl -I http://127.0.0.1:8080/omniroute/
 curl -I https://apps.ss-promotion.com/omniroute/
-curl -I -H 'Host: omniroute.ss-promotion.com' http://127.0.0.1:8080/
 ```
 
 OpenAI-compatible API:
@@ -104,7 +103,7 @@ curl http://127.0.0.1:20128/v1/models \
 
 The API may return an auth or setup error until providers/API keys are configured. That is acceptable for the first install; the service must still respond.
 
-## Web UI Hostname
+## Web UI Path Routing
 
 OmniRoute's Web UI is a Next.js app and uses root-level paths:
 
@@ -115,19 +114,21 @@ OmniRoute's Web UI is a Next.js app and uses root-level paths:
 /api/*
 ```
 
-These conflict with Hermes dashboard paths on `apps.ss-promotion.com`, especially `/api/*`. For this reason the working UI target is:
+The MVP exposes only one public HTTP hostname:
 
 ```text
-omniroute.ss-promotion.com
+apps.ss-promotion.com -> Cloudflare Tunnel -> HTTP localhost:8080 -> nginx
 ```
 
-Cloudflare Tunnel should route that hostname to the same local nginx origin:
+nginx then maps OmniRoute under:
 
 ```text
-omniroute.ss-promotion.com -> HTTP localhost:8080
+https://apps.ss-promotion.com/omniroute/
 ```
 
-nginx then selects the `server_name omniroute.ss-promotion.com` block and proxies `/` to `127.0.0.1:20128`.
+The nginx config rewrites OmniRoute's root-level Next.js asset, dashboard, login, and API paths so they stay under `/omniroute/`.
+
+This is more fragile than a dedicated hostname because it depends on upstream HTML/JavaScript path shapes. If OmniRoute changes its frontend output and the dashboard breaks, first update `ops/nginx/ai-harness.conf`; only add a dedicated hostname if path rewriting becomes too expensive to maintain.
 
 ## Secrets
 
