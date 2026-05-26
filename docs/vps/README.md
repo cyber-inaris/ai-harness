@@ -11,3 +11,6 @@ Planned topics:
 - Firewall rules.
 - Docker installation.
 
+Current runbooks:
+
+- [Ubuntu Host Setup Runbook](ubuntu-setup.md)

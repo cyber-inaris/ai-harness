@@ -1,0 +1,27 @@
+# Example Codex/agent-side service config for AI Harness.
+# Keep real passwords and tokens in environment variables, not in this file.
+
+services:
+  hermes:
+    base_url: "https://<ngrok-id>.ngrok-free.app/hermes"
+    auth:
+      type: "basic"
+      username_env: "AI_HARNESS_USER"
+      password_env: "AI_HARNESS_PASSWORD"
+
+  router:
+    base_url: "https://<ngrok-id>.ngrok-free.app/router"
+    auth:
+      type: "basic"
+      username_env: "AI_HARNESS_USER"
+      password_env: "AI_HARNESS_PASSWORD"
+    api:
+      type: "openai-compatible"
+      bearer_token_env: "AI_HARNESS_ROUTER_KEY"
+
+  benchmarks:
+    base_url: "https://<ngrok-id>.ngrok-free.app/benchmarks"
+    auth:
+      type: "basic"
+      username_env: "AI_HARNESS_USER"
+      password_env: "AI_HARNESS_PASSWORD"
