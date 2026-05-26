@@ -14,7 +14,7 @@ Public dashboard/API routing goes through the existing Cloudflare/nginx gateway:
 
 ```text
 https://apps.ss-promotion.com/v1/
-https://apps.ss-promotion.com/omniroute/
+https://omniroute.ss-promotion.com/
 ```
 
 ## Upstream References
@@ -90,10 +90,10 @@ curl -I http://127.0.0.1:20128/v1/models
 Gateway:
 
 ```bash
-curl -I http://127.0.0.1:8080/omniroute/
-curl -I https://apps.ss-promotion.com/omniroute/
-curl -I https://apps.ss-promotion.com/omniroute/dashboard
-curl -I https://apps.ss-promotion.com/omniroute/_next/static/chunks/webpack-63849d10ecdf4bd8.js
+curl -I -H 'Host: omniroute.ss-promotion.com' http://127.0.0.1:8080/
+curl -I https://omniroute.ss-promotion.com/
+curl -I https://omniroute.ss-promotion.com/dashboard
+curl -I https://omniroute.ss-promotion.com/_next/static/chunks/webpack-63849d10ecdf4bd8.js
 ```
 
 OpenAI-compatible API:
@@ -124,12 +124,12 @@ curl -X POST http://127.0.0.1:20128/api/settings/require-login \
 Then log in at:
 
 ```text
-https://apps.ss-promotion.com/omniroute/
+https://omniroute.ss-promotion.com/
 ```
 
 Change the temporary password immediately in the OmniRoute settings.
 
-## Web UI Path Routing
+## Web UI Hostname Routing
 
 OmniRoute's Web UI is a Next.js app and uses root-level paths:
 
@@ -140,33 +140,35 @@ OmniRoute's Web UI is a Next.js app and uses root-level paths:
 /api/*
 ```
 
-The MVP exposes only one public HTTP hostname:
+Path routing under `apps.ss-promotion.com/omniroute/` was tested and rejected because the UI redirects to root-level `/dashboard` and `/home` after login. On the shared hostname those paths belong to Hermes, so the user can be pushed into the wrong app.
+
+Use a dedicated UI hostname:
 
 ```text
-apps.ss-promotion.com -> Cloudflare Tunnel -> HTTP localhost:8080 -> nginx
+omniroute.ss-promotion.com -> Cloudflare Tunnel -> HTTP localhost:8080 -> nginx -> http://127.0.0.1:20128
 ```
 
-nginx then maps OmniRoute under:
+Keep the OpenAI-compatible API on the shared apps hostname:
 
 ```text
-https://apps.ss-promotion.com/omniroute/
+https://apps.ss-promotion.com/v1/
 ```
 
-The nginx config rewrites OmniRoute's root-level Next.js asset, dashboard, login, and API paths so they stay under `/omniroute/`.
-
-Some browser-managed assets may still be requested from root, especially after cached HTML or manifest responses. The nginx config includes narrow compatibility routes for:
+The legacy shared path redirects to the dedicated hostname:
 
 ```text
-/_next/*
-/manifest.webmanifest
-/favicon.svg
-/icon-*
-/apple-touch-icon.png
-/home
-/api/settings/require-login
+https://apps.ss-promotion.com/omniroute/... -> https://omniroute.ss-promotion.com/...
 ```
 
-This is more fragile than a dedicated hostname because it depends on upstream HTML/JavaScript path shapes. If OmniRoute changes its frontend output and the dashboard breaks, first update `ops/nginx/ai-harness.conf`; only add a dedicated hostname if path rewriting becomes too expensive to maintain.
+In Cloudflare Tunnel, add the public hostname:
+
+```text
+Subdomain: omniroute
+Domain: ss-promotion.com
+Path: empty
+Type: HTTP
+URL: localhost:8080
+```
 
 ## Secrets
 

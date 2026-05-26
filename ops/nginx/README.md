@@ -14,14 +14,14 @@ The host exposes one nginx gateway on ports `80` and `8080`.
 /healthz      -> nginx health check
 /hermes/      -> 127.0.0.1:9119
 /router/      -> 127.0.0.1:20128
-/omniroute/   -> 127.0.0.1:20128
+/omniroute/   -> redirect to omniroute.ss-promotion.com
 /v1/          -> 127.0.0.1:20128/v1
 /benchmarks/  -> 127.0.0.1:5000
 /cockpit/     -> 127.0.0.1:9090
 /webhooks/    -> 127.0.0.1:7000
 ```
 
-Cloudflare Tunnel or ngrok should point at `http://localhost:8080`.
+Cloudflare Tunnel or ngrok should point HTTP hostnames at `http://localhost:8080`.
 
 ## Hermes Dashboard Caveat
 
@@ -40,34 +40,27 @@ The first router target is OmniRoute on `127.0.0.1:20128`.
 Use:
 
 ```text
-/omniroute/ for dashboard access
+/omniroute/ redirects to the dedicated dashboard hostname
 /router/    as the generic current router path
 /v1/        as the OpenAI-compatible API path
 ```
 
-OmniRoute currently runs under the shared web hostname:
+OmniRoute UI uses a dedicated hostname:
 
 ```text
-https://apps.ss-promotion.com/omniroute/ -> nginx :8080 -> 127.0.0.1:20128
+https://omniroute.ss-promotion.com/ -> nginx :8080 -> 127.0.0.1:20128
 ```
 
-The OmniRoute dashboard uses root paths like `/_next`, `/login`, `/dashboard`, and `/api/*`, so nginx rewrites those paths under `/omniroute/`. This keeps Cloudflare simple: one HTTP hostname points to nginx, and nginx owns the internal service map.
+Reason: the OmniRoute dashboard uses root paths like `/_next`, `/login`, `/dashboard`, `/home`, and `/api/*`. When path-mounted under `apps.ss-promotion.com/omniroute/`, post-login navigation can land on Hermes routes. The dedicated hostname lets OmniRoute own `/`.
 
-The config also keeps a narrow set of root compatibility routes for browser-managed OmniRoute assets and first-login setup:
+Cloudflare Tunnel should have both public hostnames pointing to the same local origin:
 
 ```text
-/_next/*
-/manifest.webmanifest
-/favicon.svg
-/icon-*
-/apple-touch-icon.png
-/home
-/api/settings/require-login
+apps.ss-promotion.com      -> HTTP localhost:8080
+omniroute.ss-promotion.com -> HTTP localhost:8080
 ```
 
-Avoid broad root `/api/*` proxying to OmniRoute because Hermes currently owns several root dashboard API paths on the same hostname.
-
-For future routers, add a new nginx path block instead of a new Cloudflare Tunnel hostname unless the upstream UI cannot be made path-safe:
+For future routers, add a new nginx path block when the UI is path-safe. Use a dedicated hostname when the upstream app assumes root paths:
 
 ```text
 /router-name/ -> router dashboard

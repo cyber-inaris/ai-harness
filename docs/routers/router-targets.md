@@ -34,25 +34,29 @@ OmniRoute UI/API:
   local:  http://127.0.0.1:20128
   API:    http://127.0.0.1:20128/v1
   public API: https://apps.ss-promotion.com/v1
-  public UI:  https://apps.ss-promotion.com/omniroute/
+  public UI:  https://omniroute.ss-promotion.com/
 
 Generic router path:
   public: https://apps.ss-promotion.com/router/
 ```
 
-Cloudflare should expose one HTTP hostname for the MVP:
+Cloudflare should expose one shared HTTP hostname for generic apps and API traffic:
 
 ```text
 apps.ss-promotion.com -> Cloudflare Tunnel -> http://localhost:8080 -> nginx
 ```
 
-nginx owns service routing behind that single hostname. OmniRoute is a Next.js app that expects root paths such as `/_next`, `/login`, `/dashboard`, and `/api/*`, so the nginx config rewrites those paths under `/omniroute/`.
+Some web dashboards need their own hostname because they assume root-level paths. OmniRoute is one of them: its Next.js UI navigates to `/_next`, `/login`, `/dashboard`, `/home`, and `/api/*`. Path-mounting it under `/omniroute/` conflicts with Hermes and breaks after login.
 
-Dedicated hostnames remain a fallback if an upstream UI update breaks path rewriting, but they are not part of the MVP routing policy.
+For OmniRoute, add a second Cloudflare public hostname that still points to the same local nginx origin:
+
+```text
+omniroute.ss-promotion.com -> Cloudflare Tunnel -> http://localhost:8080 -> nginx
+```
 
 ## Adding More Routers
 
-Do not add a Cloudflare Tunnel hostname for every router during the MVP. Add nginx path routes behind the existing `apps.ss-promotion.com` gateway.
+Default to nginx path routes behind `apps.ss-promotion.com` for APIs and simple dashboards. Use a dedicated hostname only when the upstream UI requires root paths or cannot be made path-safe.
 
 Recommended pattern:
 
@@ -67,3 +71,10 @@ Recommended pattern:
 ```
 
 Use `/v1/` as the stable endpoint for agents. Switch its upstream when the chosen default router changes. Keep router-specific API paths only for testing, fallback, and benchmarks.
+
+Hostname rule:
+
+```text
+Simple service or API: apps.ss-promotion.com/path/
+Root-assuming dashboard: service.ss-promotion.com/
+```
