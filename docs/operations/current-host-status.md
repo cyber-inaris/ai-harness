@@ -173,6 +173,47 @@ The script is idempotent for the MVP setup: packages, directories, secret file p
 - Run Hermes dashboard as a host-level systemd service for now.
 - Run OmniRoute as the first Docker Compose router target.
 
+## Laptop Power Policy
+
+Last verified: 2026-05-27
+
+The current host is a laptop on Wi-Fi. Screen blanking settings are not enough
+for an always-on agent server: GNOME can still suspend the machine on battery,
+and suspend drops Wi-Fi, Tailscale, SSH, Cloudflare Tunnel, and running agents.
+
+Current policy:
+
+```text
+systemd sleep/suspend/hibernate targets: masked
+logind lid switch: ignore
+GNOME AC idle action: nothing
+GNOME battery idle action: nothing
+GNOME lid close action: nothing
+NetworkManager Wi-Fi power save: disabled by override
+```
+
+Apply or re-apply the policy:
+
+```bash
+sudo /opt/ai-harness/repo/scripts/disable-laptop-sleep.sh
+```
+
+For GNOME settings, the script defaults to `GUI_USER=dima`. Override it when the
+desktop session belongs to a different user:
+
+```bash
+sudo GUI_USER=alice /opt/ai-harness/repo/scripts/disable-laptop-sleep.sh
+```
+
+Verification commands:
+
+```bash
+systemctl status sleep.target suspend.target hibernate.target hybrid-sleep.target --no-pager
+sudo -u dima DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus \
+  gsettings get org.gnome.settings-daemon.plugins.power sleep-inactive-battery-type
+grep -R "wifi.powersave" /etc/NetworkManager/conf.d
+```
+
 ## OmniRoute Provider State
 
 Last verified: 2026-05-27

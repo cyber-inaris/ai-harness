@@ -11,5 +11,6 @@ deploy-host.sh                 # base host setup
 install-hermes.sh              # Hermes install/service setup
 install-omniroute.sh           # OmniRoute install/service setup
 install-langgraph-runtime.sh   # LangGraph task runtime setup
+disable-laptop-sleep.sh        # prevent home laptop hosts from suspending
 agent-task                     # stable wrapper Hermes should call
 ```

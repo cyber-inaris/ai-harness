@@ -108,6 +108,29 @@ Internet
 
 Do not expose raw secrets, router admin, Cockpit, or agent terminal endpoints without application-level auth.
 
+## Always-On Laptop Policy
+
+If the first host is a home laptop, disable system sleep separately from screen
+blanking. A laptop can keep the display off while still suspending the whole OS
+after an idle timeout, especially on battery. When the OS suspends, Wi-Fi,
+Tailscale, SSH, Cloudflare Tunnel, Docker services, and agents all disconnect.
+
+After cloning the repo on the host, run:
+
+```bash
+sudo /opt/ai-harness/repo/scripts/disable-laptop-sleep.sh
+```
+
+If the graphical desktop user is not `dima`, pass it explicitly:
+
+```bash
+sudo GUI_USER=alice /opt/ai-harness/repo/scripts/disable-laptop-sleep.sh
+```
+
+The script configures systemd-logind, masks sleep targets, disables GNOME idle
+suspend for AC and battery, ignores lid-close suspend, and disables
+NetworkManager Wi-Fi power save by override.
+
 ## Create The `ai` User
 
 Create a dedicated user for this stack:
