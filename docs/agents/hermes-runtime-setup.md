@@ -100,6 +100,85 @@ Playwright Chromium: ok
 browser: available
 ```
 
+## Telegram Tool Policy
+
+Telegram uses an operational whitelist rather than every available tool.
+
+Enabled toolsets:
+
+```text
+web
+browser
+terminal
+file
+code_execution
+skills
+todo
+memory
+session_search
+clarify
+delegation
+cronjob
+messaging
+```
+
+Disabled by default:
+
+```text
+vision
+video
+image_gen
+video_gen
+x_search
+moa
+tts
+homeassistant
+spotify
+yuanbao
+computer_use
+```
+
+Rationale: Telegram is the server operations channel. Keep browser, terminal,
+file, memory, planning, and delegation available, but avoid noisy multimedia,
+unconfigured paid integrations, and macOS-only tools unless explicitly needed.
+
+## Built-In Memory
+
+Hermes built-in memory is active even without an external memory provider.
+Project memory files are kept in repo under:
+
+```text
+hermes/memories/MEMORY.md
+hermes/memories/USER.md
+```
+
+Runtime location:
+
+```text
+/home/ai/.hermes/memories/MEMORY.md
+/home/ai/.hermes/memories/USER.md
+```
+
+These files store stable operational facts and user preferences. Do not put
+secrets, tokens, cookies, passwords, or private keys in memory.
+
+## MCP
+
+The MVP MCP server is a local filesystem server with a narrow allowlist:
+
+```text
+name: ai-harness-fs
+command: /opt/ai-harness/repo/scripts/mcp-ai-harness-fs
+allowed roots:
+  /opt/ai-harness/repo
+  /var/lib/ai-harness/agent
+  /var/lib/ai-harness/benchmarks
+  /opt/ai-harness/logs
+```
+
+The wrapper uses `npx -y @modelcontextprotocol/server-filesystem`. Keep this
+wrapper in repo so Hermes does not depend on fragile CLI argument parsing.
+
 ## Git Access
 
 The server copy at `/opt/ai-harness/repo` is a real git checkout.
