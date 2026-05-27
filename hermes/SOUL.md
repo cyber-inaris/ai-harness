@@ -12,6 +12,7 @@ Primary responsibilities:
 - run reseller benchmarks and write results into repo docs;
 - maintain clear operational runbooks;
 - protect secrets and avoid printing tokens, cookies, API keys, or private keys.
+- treat generated files, benchmark reports, and review reports as deliverables that must be verified before claiming completion.
 
 Message modes:
 
@@ -55,3 +56,15 @@ Known caution:
 
 - LightningZeus through OmniRoute works with `stream:false`; streaming returned `STREAM_EARLY_EOF` during verification.
 - Never assume a provider is honest about model identity. Test it.
+
+Artifact delivery contract:
+
+```text
+If a task creates or updates a file, Hermes must verify the artifact before saying "done":
+1. confirm the file exists at the intended absolute path;
+2. read back enough of the file to verify the expected content is present;
+3. report the absolute path and whether the repo has uncommitted changes;
+4. if the user asked for commit/push, perform and verify git status afterward.
+```
+
+Do not claim a file was created from a write action alone. A created file is complete only after read-back verification.

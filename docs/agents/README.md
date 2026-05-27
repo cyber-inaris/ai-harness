@@ -20,3 +20,4 @@ Current notes:
 - [CrewAI MVP Setup](crewai-mvp-setup.md)
 - [CrewAI Orchestration](crewai-orchestration.md)
 - [Hermes Agent On VPS](hermes-agent.md)
+- [Telegram Command Router](telegram-command-router.md)

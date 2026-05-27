@@ -1,0 +1,167 @@
+# Example Telegram command router config for Hermes.
+# This file contains no secrets.
+# Some referenced playbooks are planned placeholders and should be created
+# before enabling the matching command in production.
+
+commands:
+  review:
+    description: "Run reviews and audits"
+    help: |
+      /review team
+      /review security
+      /review benchmarks
+    subcommands:
+      team:
+        description: "Run a multi-perspective ai-harness repo review"
+        aliases:
+          - "командное ревью"
+          - "ревью проекта командой"
+          - "проведи командное ревью"
+          - "team review"
+        mode: review
+        playbook: docs/playbooks/multi-perspective-review.md
+        output: docs/agents/ai-harness-agent-team-review.md
+        template: docs/templates/review-report.md
+        risk: low
+        verification: artifact
+        approval: not_required
+        columns:
+          - priority
+          - area
+          - issue
+          - evidence
+          - recommendation
+          - owner role
+
+      security:
+        description: "Review secrets, account handling, auth, and public exposure"
+        aliases:
+          - "проверь секреты"
+          - "security review"
+          - "ревью безопасности"
+        mode: review
+        playbook: docs/playbooks/security-review.md
+        output: docs/agents/security-review.md
+        risk: low
+        verification: artifact
+        approval: not_required
+
+      benchmarks:
+        description: "Review benchmark coverage and missing smoke tests"
+        aliases:
+          - "проверь бенчмарки"
+          - "benchmark review"
+          - "каких тестов не хватает"
+        mode: review
+        playbook: docs/playbooks/benchmark-coverage-review.md
+        output: docs/benchmarks/benchmark-coverage-review.md
+        risk: low
+        verification: artifact
+        approval: not_required
+
+  bench:
+    description: "Run reseller and model benchmarks"
+    help: |
+      /bench run <provider> <model>
+      /bench smoke <provider> <model>
+    subcommands:
+      run:
+        description: "Run the standard reseller benchmark suite"
+        aliases:
+          - "прогони бенч"
+          - "проверь модель"
+          - "run benchmark"
+        mode: execute
+        playbook: docs/playbooks/reseller-benchmark.md
+        required_args:
+          - provider
+          - model
+        risk: medium
+        verification: artifact
+        approval: required_if_paid_or_unknown
+        default_budget:
+          max_requests: 20
+          max_cost_usd: 2
+
+      smoke:
+        description: "Run a small endpoint/model smoke test"
+        aliases:
+          - "smoke test"
+          - "быстрый тест модели"
+        mode: execute
+        playbook: docs/playbooks/reseller-smoke-test.md
+        required_args:
+          - provider
+          - model
+        risk: low
+        verification: artifact
+        approval: not_required
+        default_budget:
+          max_requests: 5
+          max_cost_usd: 0.5
+
+  check:
+    description: "Check system health"
+    help: |
+      /check vps
+      /check router
+      /check hermes
+    subcommands:
+      vps:
+        description: "Check VPS health, services, disk, memory, and tunnel state"
+        aliases:
+          - "проверь впс"
+          - "статус сервера"
+          - "server status"
+        mode: review
+        playbook: docs/playbooks/vps-health-check.md
+        risk: low
+        verification: commands
+        approval: not_required
+
+      router:
+        description: "Check router health and model availability"
+        aliases:
+          - "проверь роутер"
+          - "router status"
+          - "omniroute status"
+        mode: review
+        playbook: docs/playbooks/router-health-check.md
+        risk: low
+        verification: commands
+        approval: not_required
+
+      hermes:
+        description: "Check Hermes services and gateway"
+        aliases:
+          - "проверь hermes"
+          - "статус hermes"
+          - "hermes status"
+        mode: review
+        playbook: docs/playbooks/hermes-health-check.md
+        risk: low
+        verification: commands
+        approval: not_required
+
+  status:
+    description: "Show active tasks and current harness status"
+    aliases:
+      - "/status"
+      - "статус"
+      - "что сейчас работает"
+    mode: ask
+    playbook: docs/playbooks/status-summary.md
+    risk: low
+    verification: commands
+    approval: not_required
+
+fallback:
+  low_confidence:
+    action: ask_clarifying_question
+    message: "Не уверен, какую команду запустить. Выбери один из вариантов."
+  ambiguous_review:
+    choices:
+      - "/review team"
+      - "/review security"
+      - "/review benchmarks"
+      - "/check router"

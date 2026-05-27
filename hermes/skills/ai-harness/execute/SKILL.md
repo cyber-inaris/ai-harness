@@ -15,6 +15,29 @@ Use this skill when the user explicitly asks to run, install, fix, test, deploy,
 4. Never print secrets.
 5. Report exact commands and verification results.
 
+## Artifact Delivery
+
+When execution creates or updates a file, the file is not complete until it has been verified.
+
+Required checks:
+
+```text
+file exists at the intended absolute path
+file was read back after writing
+expected heading/table/section is present
+git status was checked
+final response includes absolute path and git state
+```
+
+If the user asked to commit or push, verify after the git operation:
+
+```text
+commit hash or push target
+clean or expected git status
+```
+
+Never answer "done" for a file-producing task based only on `write_file` or editor success.
+
 ## Risk Gate
 
 Ask for approval before changing:
