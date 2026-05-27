@@ -13,6 +13,7 @@ CrewAI = optional worker backend
 Current notes:
 
 - [Agent VPS Setup Runbook](agent-vps-setup.md)
+- [Artifacts And Task Pages](artifacts-and-task-pages.md)
 - [LangGraph Runtime](langgraph-runtime.md)
 - [Hermes Modes And Skills](hermes-modes-and-skills.md)
 - [Notion Task Board](notion-task-board.md)
