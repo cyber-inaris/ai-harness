@@ -515,10 +515,6 @@ def main() -> int:
     add_notion_task_args(notion_task)
     notion_task.set_defaults(func=run_notion_create_task)
 
-    board = sub.add_parser("board-create", help=argparse.SUPPRESS)
-    add_notion_task_args(board)
-    board.set_defaults(func=run_notion_create_task)
-
     brainstorm = sub.add_parser("brainstorm-start", help="Create a local brainstorming task record")
     brainstorm.add_argument("--topic", required=True)
     brainstorm.add_argument("--task-id")

@@ -38,8 +38,6 @@ Create a Notion task:
   --approval-required
 ```
 
-`board-create` exists only as a backwards-compatible hidden alias. Prefer `notion-create-task` in new instructions.
-
 ## Rules
 
 - Notion mode creates or updates task/project state only.
