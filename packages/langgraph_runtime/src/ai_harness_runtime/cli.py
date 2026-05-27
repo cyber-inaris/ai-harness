@@ -23,7 +23,7 @@ SECRET_PATTERNS = [
     re.compile(r"\b[A-Za-z0-9_-]{20,}:[A-Za-z0-9_-]{20,}\b"),
     re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----"),
 ]
-BOARD_TRIGGERS = [
+NOTION_TRIGGERS = [
     "add to board",
     "добавь в борду",
     "добавь на борду",
@@ -163,7 +163,7 @@ def maybe_set_property(properties: dict, schema: dict[str, str], name: str, valu
 def classify_mode(message: str) -> tuple[str, str]:
     text = message.lower()
     checks = [
-        ("board", BOARD_TRIGGERS, "user explicitly asked to add or write a task to the board"),
+        ("notion", NOTION_TRIGGERS, "user explicitly asked to add or write something to Notion/tasks"),
         ("brainstorm", BRAINSTORM_TRIGGERS, "user asked for brainstorming or design exploration"),
         ("review", REVIEW_TRIGGERS, "user asked to check, compare, review, or verify"),
         ("execute", EXECUTE_TRIGGERS, "user asked to run or change something now"),
@@ -374,7 +374,7 @@ def run_mode_route(args: argparse.Namespace) -> int:
                 "message": args.message,
                 "recommended_next": {
                     "ask": "answer directly",
-                    "board": "create or update a Notion task only",
+                    "notion": "create or update Notion state only",
                     "brainstorm": "start brainstorming and wait for design approval before implementation",
                     "plan": "produce a plan or task breakdown",
                     "execute": "start a bounded workflow after safety checks",
@@ -388,7 +388,7 @@ def run_mode_route(args: argparse.Namespace) -> int:
     return 0
 
 
-def run_board_create(args: argparse.Namespace) -> int:
+def run_notion_create_task(args: argparse.Namespace) -> int:
     if has_secret_marker(args.title) or has_secret_marker(args.body or ""):
         raise SystemExit("Refusing to create a Notion task that appears to contain a secret")
     token, database_id = notion_config(args.notion_env)
@@ -477,6 +477,20 @@ def run_brainstorm_start(args: argparse.Namespace) -> int:
     return 0
 
 
+def add_notion_task_args(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument("--title", required=True)
+    parser.add_argument("--body", default="")
+    parser.add_argument("--type", default="research")
+    parser.add_argument("--risk", default="low")
+    parser.add_argument("--agent", default="planner")
+    parser.add_argument("--priority", default="Normal")
+    parser.add_argument("--status")
+    parser.add_argument("--langgraph-task-id", default="")
+    parser.add_argument("--artifact", default="")
+    parser.add_argument("--approval-required", action="store_true")
+    parser.add_argument("--notion-env", default=str(DEFAULT_NOTION_ENV))
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="AI Harness LangGraph task runtime")
     parser.add_argument("--repo", default=str(DEFAULT_REPO))
@@ -497,19 +511,13 @@ def main() -> int:
     route.add_argument("--message", required=True)
     route.set_defaults(func=run_mode_route)
 
-    board = sub.add_parser("board-create", help="Create a Notion board task")
-    board.add_argument("--title", required=True)
-    board.add_argument("--body", default="")
-    board.add_argument("--type", default="research")
-    board.add_argument("--risk", default="low")
-    board.add_argument("--agent", default="planner")
-    board.add_argument("--priority", default="Normal")
-    board.add_argument("--status")
-    board.add_argument("--langgraph-task-id", default="")
-    board.add_argument("--artifact", default="")
-    board.add_argument("--approval-required", action="store_true")
-    board.add_argument("--notion-env", default=str(DEFAULT_NOTION_ENV))
-    board.set_defaults(func=run_board_create)
+    notion_task = sub.add_parser("notion-create-task", help="Create a Notion task")
+    add_notion_task_args(notion_task)
+    notion_task.set_defaults(func=run_notion_create_task)
+
+    board = sub.add_parser("board-create", help=argparse.SUPPRESS)
+    add_notion_task_args(board)
+    board.set_defaults(func=run_notion_create_task)
 
     brainstorm = sub.add_parser("brainstorm-start", help="Create a local brainstorming task record")
     brainstorm.add_argument("--topic", required=True)

@@ -11,7 +11,7 @@ Every user message should be routed into one of a few modes. The mode decides wh
 | Mode | Use When | Default Action |
 |---|---|---|
 | `ask` | The user asks a question or wants advice | Answer directly; do not write Notion; do not run tools unless needed |
-| `board` | The user says to add/write/put something on the board/backlog/Notion | Create or update a Notion task; do not execute it |
+| `notion` | The user says to add/write/put something in Notion, the board, backlog, or task list | Create or update Notion state; do not execute it |
 | `brainstorm` | The user wants to design, invent, choose architecture, or explicitly invokes brainstorming | Run the brainstorming skill; do not implement before design approval |
 | `plan` | The user asks for a plan, breakdown, checklist, or task decomposition | Produce a plan; optionally create Notion tasks if asked |
 | `execute` | The user asks to run, install, test, fix, deploy, or do the work now | Start a bounded LangGraph workflow or use shell after safety checks |
@@ -20,7 +20,7 @@ Every user message should be routed into one of a few modes. The mode decides wh
 If the route is ambiguous, Hermes should ask:
 
 ```text
-Do you want me to answer, add this to the board, brainstorm it, plan it, or execute it now?
+Do you want me to answer, add this to Notion, brainstorm it, plan it, or execute it now?
 ```
 
 ## Triggers
@@ -74,7 +74,7 @@ Hermes should call stable wrapper commands, not Python modules directly:
 
 ```bash
 /opt/ai-harness/repo/scripts/agent-task mode-route --message "..."
-/opt/ai-harness/repo/scripts/agent-task board-create --title "..." --body "..."
+/opt/ai-harness/repo/scripts/agent-task notion-create-task --title "..." --body "..."
 /opt/ai-harness/repo/scripts/agent-task brainstorm-start --topic "..."
 ```
 

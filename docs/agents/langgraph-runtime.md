@@ -141,11 +141,11 @@ Hermes should call the stable wrapper:
 
 Hermes should not call internal Python modules directly.
 
-Mode and board commands:
+Mode and Notion commands:
 
 ```bash
 /opt/ai-harness/repo/scripts/agent-task mode-route --message "..."
-/opt/ai-harness/repo/scripts/agent-task board-create --title "..." --body "..."
+/opt/ai-harness/repo/scripts/agent-task notion-create-task --title "..." --body "..."
 /opt/ai-harness/repo/scripts/agent-task brainstorm-start --topic "..."
 ```
 

@@ -20,6 +20,6 @@ Useful `agent-task` commands:
 ```bash
 ./scripts/agent-task status
 ./scripts/agent-task mode-route --message "добавь в борду: протестировать tcdmx.com"
-./scripts/agent-task board-create --title "Test reseller tcdmx.com" --type provider --risk medium --agent benchmark
+./scripts/agent-task notion-create-task --title "Test reseller tcdmx.com" --type provider --risk medium --agent benchmark
 ./scripts/agent-task brainstorm-start --topic "Agent modes"
 ```

@@ -26,10 +26,10 @@ Use this stable command to create a local brainstorming task record:
 /opt/ai-harness/repo/scripts/agent-task brainstorm-start --topic "..."
 ```
 
-If the user only asks to add the idea to the board, use board mode instead:
+If the user only asks to add the idea to Notion/tasks, use Notion mode instead:
 
 ```bash
-/opt/ai-harness/repo/scripts/agent-task board-create --title "..." --type research --risk low --agent planner
+/opt/ai-harness/repo/scripts/agent-task notion-create-task --title "..." --type research --risk low --agent planner
 ```
 
 ## Rules
@@ -37,4 +37,4 @@ If the user only asks to add the idea to the board, use board mode instead:
 - Keep questions short.
 - Ask one question per turn.
 - Do not turn every discussion into a Notion task.
-- Create Notion tasks only when the user asks for board/backlog/planning, or when the design is approved and needs implementation tracking.
+- Create Notion tasks only when the user asks for Notion/board/backlog/planning, or when the design is approved and needs implementation tracking.

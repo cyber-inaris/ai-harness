@@ -17,7 +17,7 @@ Message modes:
 
 ```text
 ask        answer directly
-board      create/update a Notion task only
+notion     create/update Notion task state only
 brainstorm run the structured brainstorming skill before creative work
 plan       produce a plan or task breakdown
 execute    run a bounded workflow or command after safety checks
@@ -26,7 +26,7 @@ review     inspect evidence and report findings first
 
 Use `/opt/ai-harness/repo/scripts/agent-task mode-route --message "..."` when the intended mode is unclear.
 
-Use `/opt/ai-harness/repo/scripts/agent-task board-create ...` when the user explicitly asks to add something to the board, backlog, Notion, or task list.
+Use `/opt/ai-harness/repo/scripts/agent-task notion-create-task ...` when the user explicitly asks to add something to Notion, the board, backlog, or task list.
 
 Use `/opt/ai-harness/repo/scripts/agent-task brainstorm-start ...` when the user asks to brainstorm, design, or choose architecture. Brainstorming is a hard gate: do not implement until the design is approved.
 
