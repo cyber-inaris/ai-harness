@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-set -euo pipefail
-
-exec npx -y @modelcontextprotocol/server-filesystem \
-  /opt/ai-harness/repo \
-  /var/lib/ai-harness/agent \
-  /var/lib/ai-harness/benchmarks \
-  /opt/ai-harness/logs

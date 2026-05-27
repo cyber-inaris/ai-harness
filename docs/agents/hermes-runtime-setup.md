@@ -164,20 +164,12 @@ secrets, tokens, cookies, passwords, or private keys in memory.
 
 ## MCP
 
-The MVP MCP server is a local filesystem server with a narrow allowlist:
+No MCP servers are enabled for the MVP Telegram runtime.
 
-```text
-name: ai-harness-fs
-command: /opt/ai-harness/repo/scripts/mcp-ai-harness-fs
-allowed roots:
-  /opt/ai-harness/repo
-  /var/lib/ai-harness/agent
-  /var/lib/ai-harness/benchmarks
-  /opt/ai-harness/logs
-```
-
-The wrapper uses `npx -y @modelcontextprotocol/server-filesystem`. Keep this
-wrapper in repo so Hermes does not depend on fragile CLI argument parsing.
+Do not enable filesystem MCP by default. Hermes already has normal terminal and
+file tools, and broad file-sharing over MCP adds another write path that is not
+needed yet. Add specific MCP servers later only when there is a clear task, a
+small scope, and a documented allowlist.
 
 ## Git Access
 
