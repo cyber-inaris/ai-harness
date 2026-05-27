@@ -136,6 +136,7 @@ Runtime directories:
 /var/lib/ai-harness/scores
 /var/lib/ai-harness/router
 /var/lib/ai-harness/agent
+/var/lib/ai-harness/provider-bindings.sqlite
 /etc/ai-harness/env
 /etc/ai-harness/nginx
 ```
@@ -149,9 +150,28 @@ Secret env files:
 /opt/ai-harness/secrets/ngrok.env
 /opt/ai-harness/secrets/providers.env
 /opt/ai-harness/secrets/router.env
+/opt/ai-harness/secrets/sspanel.env
 ```
 
 `/opt/ai-harness/secrets` is `700`; env files are `600`.
+
+`provider-bindings.sqlite` stores provider-to-Telegram binding attempts for
+owned provider accounts, starting with FreeModel. Hermes should set:
+
+```text
+AI_HARNESS_BINDINGS_DB=/var/lib/ai-harness/provider-bindings.sqlite
+```
+
+SSPanel executor credentials for future Hermes runs belong in a private env
+file such as `/opt/ai-harness/secrets/sspanel.env`:
+
+```text
+SSPANEL_BASE_URL=<internal or local SSPanel API URL>
+SSPANEL_ADMIN_EMAIL=<admin email>
+SSPANEL_ADMIN_PASSWORD=<admin password>
+# or
+SSPANEL_ADMIN_TOKEN=<short-lived token>
+```
 
 ## Deployment Command
 
