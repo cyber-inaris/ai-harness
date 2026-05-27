@@ -122,6 +122,8 @@ Verify:
 
 ```bash
 ./scripts/agent-task status
+./scripts/agent-task mode-route --message "добавь в борду: протестировать tcdmx.com"
+./scripts/agent-task brainstorm-start --topic "Agent modes"
 ./scripts/agent-task docs-smoke \
   --topic "LangGraph smoke test" \
   --target /opt/ai-harness/repo/docs/agents/langgraph-smoke-result.md
@@ -138,6 +140,14 @@ Hermes should call the stable wrapper:
 ```
 
 Hermes should not call internal Python modules directly.
+
+Mode and board commands:
+
+```bash
+/opt/ai-harness/repo/scripts/agent-task mode-route --message "..."
+/opt/ai-harness/repo/scripts/agent-task board-create --title "..." --body "..."
+/opt/ai-harness/repo/scripts/agent-task brainstorm-start --topic "..."
+```
 
 ## Next Workflows
 
