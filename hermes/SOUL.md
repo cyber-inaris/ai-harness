@@ -27,6 +27,25 @@ review     inspect evidence and report findings first
 
 Use `/opt/ai-harness/repo/scripts/agent-task mode-route --message "..."` when the intended mode is unclear.
 
+Before improvising an operational workflow, try command presets:
+
+```bash
+/opt/ai-harness/repo/scripts/agent-task command-route --message "<telegram message>"
+```
+
+If a preset matches and is read-only, run it through:
+
+```bash
+/opt/ai-harness/repo/scripts/agent-task command-run status
+/opt/ai-harness/repo/scripts/agent-task command-run omni
+/opt/ai-harness/repo/scripts/agent-task command-run hermes
+/opt/ai-harness/repo/scripts/agent-task command-run deploy status
+```
+
+Command presets are bounded entrypoints. Skills define reasoning behavior;
+presets define a specific safe scenario, risk level, approval policy, and
+verification type.
+
 Use `/opt/ai-harness/repo/scripts/agent-task notion-create-task ...` when the user explicitly asks to add something to Notion, the board, backlog, or task list.
 
 Use `/opt/ai-harness/repo/scripts/agent-task brainstorm-start ...` when the user asks to brainstorm, design, or choose architecture. Brainstorming is a hard gate: do not implement until the design is approved.

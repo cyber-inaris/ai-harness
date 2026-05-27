@@ -4,6 +4,7 @@ import argparse
 import json
 import re
 import sqlite3
+import subprocess
 import urllib.error
 import urllib.request
 from dataclasses import dataclass
@@ -44,6 +45,52 @@ PLAN_TRIGGERS = ["plan", "план", "распиши", "разбей", "деко
 EXECUTE_TRIGGERS = ["запусти", "сделай", "установи", "почини", "deploy", "run", "test now"]
 REVIEW_TRIGGERS = ["review", "проверь", "сравни", "оцени", "audit", "verify"]
 NOTION_VERSION = "2022-06-28"
+COMMAND_ALIASES = {
+    "/status": ("status", None),
+    "status": ("status", None),
+    "статус": ("status", None),
+    "что сейчас работает": ("status", None),
+    "/omni": ("omni", None),
+    "omni": ("omni", None),
+    "/omniroute": ("omni", None),
+    "omniroute": ("omni", None),
+    "проверь роутер": ("omni", None),
+    "статус роутера": ("omni", None),
+    "/hermes": ("hermes", None),
+    "hermes": ("hermes", None),
+    "проверь hermes": ("hermes", None),
+    "статус hermes": ("hermes", None),
+    "/deploy status": ("deploy", "status"),
+    "deploy status": ("deploy", "status"),
+    "статус деплоя": ("deploy", "status"),
+}
+COMMANDS = {
+    "status": {
+        "mode": "review",
+        "risk": "low",
+        "approval": "not_required",
+        "description": "Read-only summary of host, services, docker, gateway, and repo state.",
+    },
+    "omni": {
+        "mode": "review",
+        "risk": "low",
+        "approval": "not_required",
+        "description": "Read-only OmniRoute health, container, route, and model availability check.",
+    },
+    "hermes": {
+        "mode": "review",
+        "risk": "low",
+        "approval": "not_required",
+        "description": "Read-only Hermes gateway/dashboard/config/tooling check.",
+    },
+    "deploy": {
+        "mode": "review",
+        "risk": "low",
+        "approval": "not_required",
+        "description": "Read-only deployment/git/nginx/systemd status.",
+        "subcommands": {"status": "Read-only deployment status."},
+    },
+}
 
 
 class TaskState(TypedDict, total=False):
@@ -173,6 +220,127 @@ def classify_mode(message: str) -> tuple[str, str]:
         if any(trigger in text for trigger in triggers):
             return mode, reason
     return "ask", "no action trigger detected"
+
+
+def normalize_message(message: str) -> str:
+    return re.sub(r"\s+", " ", message.strip().lower())
+
+
+def route_command(message: str) -> dict:
+    text = normalize_message(message)
+    parts = text.split()
+    if text in COMMAND_ALIASES:
+        command, subcommand = COMMAND_ALIASES[text]
+    elif parts and parts[0] in {"/status", "status"}:
+        command, subcommand = "status", None
+    elif parts and parts[0] in {"/omni", "/omniroute", "omni", "omniroute"}:
+        command, subcommand = "omni", None
+    elif parts and parts[0] in {"/hermes", "hermes"}:
+        command, subcommand = "hermes", None
+    elif len(parts) >= 2 and parts[0] in {"/deploy", "deploy"} and parts[1] == "status":
+        command, subcommand = "deploy", "status"
+    elif text in {"проверь сервер", "статус сервера", "server status"}:
+        command, subcommand = "status", None
+    else:
+        return {
+            "matched": False,
+            "message": message,
+            "reason": "no preset command matched",
+            "choices": ["/status", "/omni", "/hermes", "/deploy status"],
+        }
+
+    meta = COMMANDS[command]
+    return {
+        "matched": True,
+        "command": command,
+        "subcommand": subcommand,
+        "mode": meta["mode"],
+        "risk": meta["risk"],
+        "approval": meta["approval"],
+        "description": meta["description"],
+        "verification": "commands",
+        "read_only": True,
+    }
+
+
+def command_result(name: str, cmd: list[str], timeout: int = 20) -> dict:
+    try:
+        completed = subprocess.run(
+            cmd,
+            cwd=str(DEFAULT_REPO),
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            timeout=timeout,
+            check=False,
+        )
+        output = completed.stdout.strip()
+        if has_secret_marker(output):
+            output = "<redacted: output looked like it contained a secret>"
+        return {"name": name, "exit_code": completed.returncode, "output": output[-4000:]}
+    except subprocess.TimeoutExpired as exc:
+        output = (exc.stdout or "").strip() if isinstance(exc.stdout, str) else ""
+        return {"name": name, "exit_code": 124, "output": f"timed out after {timeout}s\n{output[-1000:]}"}
+
+
+def run_read_only_checks(command: str, subcommand: str | None) -> dict:
+    if command == "status":
+        checks = [
+            ("host", ["bash", "-lc", "hostname; date; uptime"]),
+            (
+                "services",
+                [
+                    "systemctl",
+                    "is-active",
+                    "ssh",
+                    "tailscaled",
+                    "nginx",
+                    "cloudflared",
+                    "docker",
+                    "hermes-gateway",
+                    "hermes-dashboard",
+                ],
+            ),
+            ("docker", ["docker", "ps", "--format", "table {{.Names}}\t{{.Status}}\t{{.Ports}}"]),
+            ("gateway", ["curl", "-fsS", "http://127.0.0.1:8080/healthz"]),
+            ("tasks", [str(DEFAULT_REPO / "scripts/agent-task"), "status", "--limit", "5"]),
+            ("git", ["git", "status", "--short", "--branch"]),
+        ]
+    elif command == "omni":
+        checks = [
+            ("container", ["docker", "ps", "--filter", "name=ai-harness-omniroute", "--format", "table {{.Names}}\t{{.Status}}\t{{.Ports}}"]),
+            ("require-login", ["curl", "-fsS", "http://127.0.0.1:20128/api/settings/require-login"]),
+            ("models", ["bash", "-lc", "curl -fsS http://127.0.0.1:20128/v1/models | jq -r '.data[0:12][]?.id'"]),
+            ("public-route", ["bash", "-lc", "curl -sS -o /dev/null -w '%{http_code}\\n' -H 'Host: omniroute.ss-promotion.com' http://127.0.0.1:8080/login"]),
+        ]
+    elif command == "hermes":
+        checks = [
+            ("services", ["systemctl", "is-active", "hermes-gateway", "hermes-dashboard"]),
+            ("gateway-status", ["/home/ai/.local/bin/hermes", "gateway", "status"]),
+            ("tools-telegram", ["/home/ai/.local/bin/hermes", "tools", "list", "--platform", "telegram"]),
+            ("mcp", ["/home/ai/.local/bin/hermes", "mcp", "list"]),
+            ("dashboard", ["bash", "-lc", "curl -sS -o /dev/null -w '%{http_code}\\n' http://127.0.0.1:9119/"]),
+        ]
+    elif command == "deploy" and subcommand == "status":
+        checks = [
+            ("git", ["git", "status", "--short", "--branch"]),
+            ("last-commit", ["git", "log", "--oneline", "-1"]),
+            ("nginx", ["sudo", "nginx", "-t"]),
+            ("services", ["systemctl", "is-active", "nginx", "cloudflared", "hermes-gateway", "hermes-dashboard"]),
+            ("repo-remote", ["git", "remote", "-v"]),
+        ]
+    else:
+        raise SystemExit(f"Unknown read-only command: {command} {subcommand or ''}".strip())
+
+    results = [command_result(name, cmd) for name, cmd in checks]
+    ok = all(item["exit_code"] == 0 for item in results)
+    return {
+        "command": command,
+        "subcommand": subcommand,
+        "read_only": True,
+        "ok": ok,
+        "results": results,
+    }
 
 
 def resolve_allowed_target(target: str, paths: RuntimePaths) -> Path:
@@ -388,6 +556,20 @@ def run_mode_route(args: argparse.Namespace) -> int:
     return 0
 
 
+def run_command_route(args: argparse.Namespace) -> int:
+    print(json.dumps(route_command(args.message), ensure_ascii=False, indent=2))
+    return 0
+
+
+def run_command_run(args: argparse.Namespace) -> int:
+    route = route_command(args.command if not args.subcommand else f"{args.command} {args.subcommand}")
+    if not route.get("matched"):
+        raise SystemExit(f"Unknown command preset: {args.command} {args.subcommand or ''}".strip())
+    result = run_read_only_checks(route["command"], route.get("subcommand"))
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+    return 0 if result["ok"] else 2
+
+
 def run_notion_create_task(args: argparse.Namespace) -> int:
     if has_secret_marker(args.title) or has_secret_marker(args.body or ""):
         raise SystemExit("Refusing to create a Notion task that appears to contain a secret")
@@ -510,6 +692,15 @@ def main() -> int:
     route = sub.add_parser("mode-route", help="Classify a user message into a Hermes mode")
     route.add_argument("--message", required=True)
     route.set_defaults(func=run_mode_route)
+
+    command_route = sub.add_parser("command-route", help="Map a Telegram-style message to a command preset")
+    command_route.add_argument("--message", required=True)
+    command_route.set_defaults(func=run_command_route)
+
+    command_run = sub.add_parser("command-run", help="Run a read-only command preset")
+    command_run.add_argument("command", choices=sorted(COMMANDS))
+    command_run.add_argument("subcommand", nargs="?")
+    command_run.set_defaults(func=run_command_run)
 
     notion_task = sub.add_parser("notion-create-task", help="Create a Notion task")
     add_notion_task_args(notion_task)

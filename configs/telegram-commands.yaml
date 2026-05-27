@@ -1,0 +1,85 @@
+# Telegram command presets for Hermes.
+# This file contains no secrets.
+
+commands:
+  status:
+    description: "Read-only summary of host, services, Docker, gateway, tasks, and git state"
+    aliases:
+      - "/status"
+      - "status"
+      - "статус"
+      - "статус сервера"
+      - "что сейчас работает"
+    mode: review
+    runner:
+      command: "scripts/agent-task command-run status"
+    risk: low
+    verification: commands
+    approval: not_required
+    read_only: true
+
+  omni:
+    description: "Read-only OmniRoute health, container, model list, and public route check"
+    aliases:
+      - "/omni"
+      - "/omniroute"
+      - "omni"
+      - "omniroute"
+      - "проверь роутер"
+      - "статус роутера"
+    mode: review
+    runner:
+      command: "scripts/agent-task command-run omni"
+    risk: low
+    verification: commands
+    approval: not_required
+    read_only: true
+
+  hermes:
+    description: "Read-only Hermes gateway, dashboard, Telegram tools, MCP, and dashboard check"
+    aliases:
+      - "/hermes"
+      - "hermes"
+      - "проверь hermes"
+      - "статус hermes"
+    mode: review
+    runner:
+      command: "scripts/agent-task command-run hermes"
+    risk: low
+    verification: commands
+    approval: not_required
+    read_only: true
+
+  deploy:
+    description: "Deployment helpers"
+    subcommands:
+      status:
+        description: "Read-only deployment/git/nginx/systemd status"
+        aliases:
+          - "/deploy status"
+          - "deploy status"
+          - "статус деплоя"
+        mode: review
+        runner:
+          command: "scripts/agent-task command-run deploy status"
+        risk: low
+        verification: commands
+        approval: not_required
+        read_only: true
+
+planned:
+  bench:
+    description: "Benchmark commands will be added after the smoke benchmark runner is stable"
+    examples:
+      - "/bench smoke freemodel free-mod/gpt-5.5"
+      - "/bench run lightningzeus lightningzeus/claude-opus-4.6"
+  review:
+    description: "Artifact-producing review commands already exist as skills/playbooks and will get command runners next"
+    examples:
+      - "/review team"
+      - "/review security"
+
+fallback:
+  low_confidence:
+    action: ask_clarifying_question
+    message: "Не уверен, какую команду запустить. Выбери: /status, /omni, /hermes, /deploy status."

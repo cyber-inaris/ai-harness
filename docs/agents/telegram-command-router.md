@@ -186,13 +186,38 @@ MVP can be simple:
 
 ```text
 Hermes receives Telegram text.
-Hermes calls scripts/agent-task mode-route --message "...".
+Hermes calls scripts/agent-task command-route --message "...".
 Runtime matches command/alias from YAML.
 Runtime returns a structured task.
 Hermes asks approval if needed.
-Hermes calls the matching playbook/script.
+Hermes calls the matching playbook/script through scripts/agent-task command-run.
 Hermes reports result.
 ```
+
+Implemented read-only presets:
+
+```bash
+scripts/agent-task command-route --message "/status"
+scripts/agent-task command-route --message "/omni"
+scripts/agent-task command-route --message "/hermes"
+scripts/agent-task command-route --message "/deploy status"
+
+scripts/agent-task command-run status
+scripts/agent-task command-run omni
+scripts/agent-task command-run hermes
+scripts/agent-task command-run deploy status
+```
+
+These commands are different from skills:
+
+| Layer | Purpose |
+|---|---|
+| Skill | Teaches Hermes how to reason in a mode, such as review or execute |
+| Command preset | Maps a short Telegram command to a bounded playbook/runner with risk, approval, and verification metadata |
+
+Read-only command presets can run without approval. Presets that spend money,
+change router state, restart services, edit files, or deploy require explicit
+approval.
 
 Later:
 

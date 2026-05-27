@@ -20,6 +20,11 @@ Useful `agent-task` commands:
 ```bash
 ./scripts/agent-task status
 ./scripts/agent-task mode-route --message "добавь в борду: протестировать tcdmx.com"
+./scripts/agent-task command-route --message "/omni"
+./scripts/agent-task command-run status
+./scripts/agent-task command-run omni
+./scripts/agent-task command-run hermes
+./scripts/agent-task command-run deploy status
 ./scripts/agent-task notion-create-task --title "Test reseller tcdmx.com" --type provider --risk medium --agent benchmark
 ./scripts/agent-task brainstorm-start --topic "Agent modes"
 ```
