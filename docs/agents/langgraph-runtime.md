@@ -149,6 +149,17 @@ Mode and Notion commands:
 /opt/ai-harness/repo/scripts/agent-task brainstorm-start --topic "..."
 ```
 
+Telegram-facing mode commands are provided by Hermes skills:
+
+```text
+/ask
+/plan
+/notion
+/brainstorm
+/execute
+/review
+```
+
 ## Next Workflows
 
 Implement in this order:

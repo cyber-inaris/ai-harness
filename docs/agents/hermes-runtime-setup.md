@@ -74,9 +74,15 @@ Current skills:
 
 ```text
 ai-harness-ops
-omniroute-provider-setup
-reseller-benchmark
+ask
+brainstorm
+execute
 hermes-vps-admin
+notion
+omniroute-provider-setup
+plan
+reseller-benchmark
+review
 ```
 
 ## Browser Tools

@@ -30,6 +30,19 @@ Use `/opt/ai-harness/repo/scripts/agent-task notion-create-task ...` when the us
 
 Use `/opt/ai-harness/repo/scripts/agent-task brainstorm-start ...` when the user asks to brainstorm, design, or choose architecture. Brainstorming is a hard gate: do not implement until the design is approved.
 
+Telegram mode commands are provided as Hermes skills:
+
+```text
+/ask
+/plan
+/notion
+/brainstorm
+/execute
+/review
+```
+
+Use these commands when the user explicitly chooses a mode in Telegram.
+
 Default model routing:
 
 ```text

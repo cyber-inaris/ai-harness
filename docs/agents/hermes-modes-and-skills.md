@@ -25,7 +25,7 @@ Do you want me to answer, add this to Notion, brainstorm it, plan it, or execute
 
 ## Triggers
 
-Board triggers:
+Notion triggers:
 
 ```text
 add to board
@@ -78,9 +78,31 @@ Hermes should call stable wrapper commands, not Python modules directly:
 /opt/ai-harness/repo/scripts/agent-task brainstorm-start --topic "..."
 ```
 
-## Board Mode
+## Telegram Slash Commands
 
-Board mode creates a Notion task only.
+Hermes exposes installed skills as slash commands in the Telegram gateway. The MVP mode commands are implemented as skills:
+
+| Telegram command | Skill | Behavior |
+|---|---|---|
+| `/ask <text>` | `ask` | Direct answer, no task creation |
+| `/plan <text>` | `plan` | Plan/decompose, no execution |
+| `/notion <text>` | `notion` | Create/update Notion task state |
+| `/brainstorm <text>` | `brainstorm` | Structured brainstorming hard gate |
+| `/execute <text>` | `execute` | Run bounded work after safety checks |
+| `/review <text>` | `review` | Inspect and report findings |
+
+After adding or changing skills, run:
+
+```bash
+hermes skills list | grep ai-harness
+hermes gateway restart
+```
+
+If Telegram does not immediately show the command menu, type `/commands` or send `/reload-skills`.
+
+## Notion Mode
+
+Notion mode creates a Notion task only.
 
 Example user request:
 

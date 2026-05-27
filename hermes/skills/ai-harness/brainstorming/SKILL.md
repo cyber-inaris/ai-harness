@@ -1,3 +1,8 @@
+---
+name: brainstorm
+description: Structured brainstorming mode for design, architecture, feature shaping, and creative technical decisions.
+---
+
 # Brainstorming
 
 Use this skill when the user asks Hermes to brainstorm, design, invent a feature, choose architecture, or modify behavior creatively.

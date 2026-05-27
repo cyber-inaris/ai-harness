@@ -1,3 +1,8 @@
+---
+name: notion
+description: Work with the AI Harness Notion task database without executing the task itself.
+---
+
 # Notion
 
 Use this skill when the user asks Hermes to add, update, plan, inspect, or sync Notion tasks and project records.
