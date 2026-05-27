@@ -28,6 +28,8 @@ apt-get install -y \
   nano \
   nginx \
   openssh-server \
+  python3-venv \
+  sqlite3 \
   ufw \
   unzip \
   xfce4 \

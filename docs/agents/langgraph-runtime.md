@@ -105,6 +105,12 @@ write outside allowed roots
 
 ## Install
 
+Host package prerequisites:
+
+```bash
+sudo apt install -y python3-venv sqlite3
+```
+
 From the server:
 
 ```bash
@@ -149,4 +155,3 @@ Low-risk tasks can run automatically.
 Medium tasks can run if they only read APIs or write docs.
 
 High and critical tasks must stop for explicit approval before changing services, router policy, secrets, firewall, SSH, billing, or account state.
-

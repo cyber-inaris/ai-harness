@@ -14,3 +14,5 @@ Planned topics:
 Current runbooks:
 
 - [Ubuntu Host Setup Runbook](ubuntu-setup.md)
+
+The Ubuntu runbook includes the current package matrix for base OS tools, nginx, Docker, XFCE/xrdp, and LangGraph runtime dependencies.

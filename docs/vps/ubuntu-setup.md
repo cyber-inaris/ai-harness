@@ -127,11 +127,12 @@ This user is not a strict security sandbox in the MVP. It is an operational boun
 
 ## Base Packages
 
-Install common tools:
+Install common host tools:
 
 ```bash
 sudo apt update
 sudo apt install -y \
+  apache2-utils \
   ca-certificates \
   curl \
   git \
@@ -141,9 +142,31 @@ sudo apt install -y \
   nano \
   nginx \
   openssh-server \
+  python3-venv \
+  sqlite3 \
   ufw \
   unzip
 ```
+
+Package groups used by the current stack:
+
+| Group | Packages | Why |
+|---|---|---|
+| Base OS/admin | `ca-certificates`, `curl`, `git`, `gnupg`, `htop`, `jq`, `nano`, `unzip` | Shell work, Git checkout, API/debug commands, downloading installers |
+| SSH | `openssh-server` | Primary technical access |
+| Firewall | `ufw` | Basic host firewall |
+| Web gateway | `nginx`, `apache2-utils` | Local reverse proxy; `apache2-utils` provides `htpasswd` for optional Basic Auth |
+| Agent runtime | `python3-venv`, `sqlite3` | LangGraph virtualenv and manual inspection of task SQLite databases |
+| Docker runtime | `docker.io`, `docker-compose-v2` | Router/apps in Docker Compose |
+| Optional desktop | `xfce4`, `xfce4-goodies`, `xrdp` | GUI access for account setup and browser-based admin work |
+
+The `scripts/deploy-host.sh` installer currently installs the full MVP set:
+
+```bash
+sudo /opt/ai-harness/repo/scripts/deploy-host.sh
+```
+
+Manual minimal install can omit the optional desktop packages if xrdp is not needed.
 
 ## SSH Setup
 
@@ -207,6 +230,12 @@ If using ngrok for public ingress, nginx can listen locally and does not require
 ## Docker And Docker Compose
 
 Install Docker from Docker's official repository or Ubuntu packages. The future `deploy.sh` should use one clear method and verify installation.
+
+Ubuntu package method used by the current MVP script:
+
+```bash
+sudo apt install -y docker.io docker-compose-v2
+```
 
 Validation commands:
 
@@ -276,6 +305,14 @@ Example future routes:
 ```
 
 Every service exposed through ngrok must have its own auth or be explicitly safe for public access.
+
+If Basic Auth is used at the nginx layer, install:
+
+```bash
+sudo apt install -y apache2-utils
+```
+
+Then create/update the password file with `htpasswd`.
 
 ## ngrok
 
@@ -373,6 +410,39 @@ ngrok
 Docker
 firewall
 systemd
+```
+
+## LangGraph Runtime Dependencies
+
+The LangGraph agent runtime is installed into a host virtualenv:
+
+```text
+/opt/ai-harness/venvs/langgraph-runtime
+```
+
+Required apt packages:
+
+```bash
+sudo apt install -y python3-venv sqlite3
+```
+
+Why:
+
+```text
+python3-venv  -> create the runtime virtualenv
+sqlite3       -> inspect /var/lib/ai-harness/agent/tasks.sqlite from shell
+```
+
+The Python package dependencies are managed by:
+
+```bash
+sudo /opt/ai-harness/repo/scripts/install-langgraph-runtime.sh
+```
+
+That script installs the local package from:
+
+```text
+/opt/ai-harness/repo/packages/langgraph_runtime
 ```
 
 ## Future `deploy.sh`
