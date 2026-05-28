@@ -1,0 +1,41 @@
+[Unit]
+Description=Obsidian MCP Server (FastMCP SSE)
+Documentation=https://github.com/cyber-inaris/ai-harness/blob/main/docs/obsidian-knowledge-os/README.md
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+User=ai
+Group=ai
+WorkingDirectory=/opt/ai-harness/repo/packages/obsidian-mcp
+
+# Python virtualenv — adjust path if using system Python
+ExecStart=/opt/ai-harness/venv/obsidian-mcp/bin/python server.py
+
+# Environment
+Environment=OBSIDIAN_VAULT_ROOT=/opt/vaults
+Environment=OBSIDIAN_MCP_HOST=127.0.0.1
+Environment=OBSIDIAN_MCP_PORT=3000
+
+# Restart policy — always restart on failure with exponential backoff
+Restart=always
+RestartSec=5
+StartLimitIntervalSec=60
+StartLimitBurst=5
+
+# Security hardening
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ReadWritePaths=/opt/vaults
+ProtectHome=read-only
+PrivateDevices=yes
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=obsidian-mcp
+
+[Install]
+WantedBy=multi-user.target

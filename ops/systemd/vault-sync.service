@@ -1,0 +1,22 @@
+[Unit]
+Description=Obsidian Vault Git Sync (one-shot)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=ai
+Group=ai
+
+ExecStart=/opt/ai-harness/repo/scripts/vault-sync.sh --vault both
+
+Environment=OBSIDIAN_VAULT_ROOT=/opt/vaults
+Environment=HOME=/home/ai
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=vault-sync
+
+[Install]
+WantedBy=multi-user.target

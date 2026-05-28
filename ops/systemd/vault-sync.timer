@@ -1,0 +1,15 @@
+[Unit]
+Description=Obsidian Vault Git Sync Timer (every 5 minutes)
+Requires=vault-sync.service
+
+[Timer]
+# Run every 5 minutes
+OnBootSec=2min
+OnUnitActiveSec=5min
+AccuracySec=30s
+
+# Persist across reboots — catch up on missed syncs
+Persistent=true
+
+[Install]
+WantedBy=timers.target
