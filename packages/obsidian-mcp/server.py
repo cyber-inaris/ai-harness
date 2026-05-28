@@ -2,7 +2,8 @@
 Obsidian MCP Server
 ===================
 
-Production-ready FastMCP server exposing structured vault operations over SSE.
+Production-ready FastMCP server exposing structured vault operations over HTTP/SSE.
+Compatible with FastMCP >= 2.0 (uses http_app() / run_http_async()).
 
 Design principles:
   - All paths are sandboxed to /opt/vaults/vault-personal and /opt/vaults/vault-agents
@@ -424,18 +425,31 @@ async def search(
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    import uvicorn
-
     log.info("Starting Obsidian MCP server on %s:%d", cfg.MCP_HOST, cfg.MCP_PORT)
     log.info("Vault personal : %s", cfg.VAULT_PERSONAL)
     log.info("Vault agents   : %s", cfg.VAULT_AGENTS)
     log.info("Audit log      : %s", cfg.AUDIT_LOG_PATH)
 
-    # FastMCP exposes a Starlette ASGI app via .sse_app()
-    uvicorn.run(
-        mcp.sse_app(),
-        host=cfg.MCP_HOST,
-        port=cfg.MCP_PORT,
-        log_level="info",
-        access_log=True,
-    )
+    # FastMCP >= 2.0: use run_http_async() which internally handles uvicorn
+    # Falls back to http_app() + manual uvicorn if needed
+    import uvicorn
+
+    try:
+        # FastMCP 3.x: http_app(transport='sse') exposes /sse endpoint
+        app = mcp.http_app(transport="sse")
+        uvicorn.run(
+            app,
+            host=cfg.MCP_HOST,
+            port=cfg.MCP_PORT,
+            log_level="info",
+            access_log=True,
+        )
+    except (AttributeError, TypeError):
+        # Older FastMCP fallback
+        uvicorn.run(
+            mcp.sse_app(),  # type: ignore[attr-defined]
+            host=cfg.MCP_HOST,
+            port=cfg.MCP_PORT,
+            log_level="info",
+            access_log=True,
+        )
