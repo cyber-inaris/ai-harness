@@ -43,6 +43,26 @@ def init_db(db_path: Path) -> None:
               activated_at text
             );
 
+            create table if not exists telegram_accounts (
+              telegram_id text primary key,
+              phone text,
+              status text not null default 'active',
+              last_used_at text,
+              created_at text not null default current_timestamp
+            );
+
+            create table if not exists telegram_action_history (
+              id integer primary key autoincrement,
+              telegram_id text not null,
+              bot_username text not null,
+              action_type text not null,
+              status text not null,
+              payload text,
+              executor text,
+              created_at text not null default current_timestamp,
+              foreign key(telegram_id) references telegram_accounts(telegram_id)
+            );
+
             create unique index if not exists provider_telegram_success_once
             on provider_telegram_bindings(provider, telegram_id)
             where status = 'success';
@@ -274,6 +294,50 @@ def run_list(args: argparse.Namespace) -> int:
     return 0
 
 
+def record_action(
+    db_path: Path,
+    telegram_id: str,
+    bot_username: str,
+    action_type: str,
+    status: str,
+    payload: str | None,
+    executor: str | None,
+) -> int:
+    init_db(db_path)
+    now = utc_now()
+    with sqlite3.connect(db_path) as con:
+        con.execute(
+            """
+            insert into telegram_accounts(telegram_id, last_used_at)
+            values (?, ?)
+            on conflict(telegram_id) do update set last_used_at = excluded.last_used_at
+            """,
+            (telegram_id, now)
+        )
+        cursor = con.execute(
+            """
+            insert into telegram_action_history(telegram_id, bot_username, action_type, status, payload, executor, created_at)
+            values (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (telegram_id, bot_username, action_type, status, payload, executor or "manual", now)
+        )
+        return int(cursor.lastrowid)
+
+
+def run_record_action(args: argparse.Namespace) -> int:
+    row_id = record_action(
+        Path(args.db),
+        args.telegram_id,
+        args.bot_username,
+        args.action_type,
+        args.status,
+        args.payload,
+        args.executor,
+    )
+    print(json.dumps({"ok": True, "action_id": row_id}, ensure_ascii=False, indent=2))
+    return 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Track provider Telegram binding state for ai-harness")
     parser.add_argument("--db", default=str(DEFAULT_DB), help="SQLite DB path; defaults to AI_HARNESS_BINDINGS_DB or data/provider-bindings.sqlite")
@@ -309,6 +373,15 @@ def main() -> int:
     list_cmd.add_argument("--provider")
     list_cmd.add_argument("--limit", type=int, default=20)
     list_cmd.set_defaults(func=run_list)
+
+    record_action_cmd = sub.add_parser("record-action", help="Record one Telegram account action")
+    record_action_cmd.add_argument("--telegram-id", required=True)
+    record_action_cmd.add_argument("--bot-username", required=True)
+    record_action_cmd.add_argument("--action-type", required=True)
+    record_action_cmd.add_argument("--status", required=True)
+    record_action_cmd.add_argument("--payload")
+    record_action_cmd.add_argument("--executor")
+    record_action_cmd.set_defaults(func=run_record_action)
 
     args = parser.parse_args()
     return args.func(args)
