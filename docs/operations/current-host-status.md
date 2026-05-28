@@ -1,6 +1,6 @@
 # Current Host Status
 
-Last verified: 2026-05-26
+Last verified: 2026-05-28
 
 ## Access
 
@@ -35,6 +35,8 @@ xrdp
 tailscaled
 cloudflared
 hermes-dashboard
+netdata
+ai-harness-heat-guard.timer
 ```
 
 Listening ports:
@@ -46,6 +48,74 @@ Listening ports:
 3389  xrdp
 9119  Hermes dashboard on 127.0.0.1 only
 20128 OmniRoute on 127.0.0.1 only
+19999 Netdata on 127.0.0.1 only
+```
+
+## Monitoring
+
+Netdata Agent is installed on the host through the official stable package
+repository.
+
+```text
+service: netdata
+version: v2.10.3
+dashboard: http://127.0.0.1:19999 on the server
+mac tunnel: http://127.0.0.1:19998 -> ai-harness-ts:127.0.0.1:19999
+```
+
+Temperature sensors are visible through `lm-sensors` and Netdata sensor charts:
+
+```text
+CPU: k10temp Tctl
+GPU: amdgpu edge
+NVMe: nvme Composite
+```
+
+Heat guard is installed as a systemd timer:
+
+```text
+timer: ai-harness-heat-guard.timer
+interval: every 5 minutes
+warning threshold: 80 C
+critical threshold: 88 C
+current power profile: power-saver
+log: /var/log/ai-harness/heat-guard.log
+```
+
+Current host-specific setting:
+
+```text
+AI_HARNESS_HEAT_START_THERMALD=0
+```
+
+Reason: `thermald` exits with `Unsupported cpu model or platform` / `No Zones
+present` on this AMD Ryzen host. The guard still sets `power-saver`, performs
+safe cleanup, and logs top CPU processes. Firefox restart remains disabled by
+default because individual Firefox tab control is not reliable without a
+dedicated browser-control setup.
+
+## Secret Management
+
+Bitwarden CLI and Bitwarden MCP are installed for the `ai` user:
+
+```text
+node: 22.x
+npm prefix: /home/ai/.local/npm-global
+bw: /home/ai/.local/npm-global/bin/bw
+mcp-server-bitwarden: /home/ai/.local/npm-global/bin/mcp-server-bitwarden
+```
+
+Current state:
+
+```text
+Bitwarden vault: unauthenticated until `bw login`
+MCP transport: local stdio only
+```
+
+Runbook:
+
+```text
+/opt/ai-harness/repo/docs/operations/bitwarden-mcp.md
 ```
 
 ## Web Gateway
@@ -315,6 +385,27 @@ repo persona: hermes/SOUL.md
 runtime persona: /home/ai/.hermes/SOUL.md
 repo skills: hermes/skills/ai-harness/
 runtime skills: /home/ai/.hermes/skills/ai-harness/
+```
+
+## Browser Automation
+
+Standard Hermes browser tools are enabled. For account-registration work that is
+sensitive to ordinary headless browsers, use Camofox Browser as the planned
+browser service.
+
+```text
+upstream: https://github.com/jo-inc/camofox-browser
+default local port: 9377
+exposure policy: localhost only
+runbook: /opt/ai-harness/repo/docs/operations/camofox-browser.md
+```
+
+Current Proton decision:
+
+```text
+Proton Bridge is fallback only.
+ss.magic.admin@proton.me returned "Please upgrade to a paid plan to use this client".
+Use Proton Web through browser automation until the account has a paid Proton plan.
 ```
 
 Enabled local project skills:

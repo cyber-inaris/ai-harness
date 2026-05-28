@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{53FA020F-021C-4190-BA46-AEE0A9B88163}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccountRegistration.Email", "src\AccountRegistration.Email\AccountRegistration.Email.csproj", "{775E488D-1D96-4C78-AD2B-E7CD218F6A62}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{434DF810-5FDD-4F29-B828-545E31E1B97B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccountRegistration.Email.Tests", "tests\AccountRegistration.Email.Tests\AccountRegistration.Email.Tests.csproj", "{CC91B8CD-BB14-47DB-93DB-B5365C5AABE7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{775E488D-1D96-4C78-AD2B-E7CD218F6A62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{775E488D-1D96-4C78-AD2B-E7CD218F6A62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{775E488D-1D96-4C78-AD2B-E7CD218F6A62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{775E488D-1D96-4C78-AD2B-E7CD218F6A62}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC91B8CD-BB14-47DB-93DB-B5365C5AABE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC91B8CD-BB14-47DB-93DB-B5365C5AABE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC91B8CD-BB14-47DB-93DB-B5365C5AABE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC91B8CD-BB14-47DB-93DB-B5365C5AABE7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{775E488D-1D96-4C78-AD2B-E7CD218F6A62} = {53FA020F-021C-4190-BA46-AEE0A9B88163}
+		{CC91B8CD-BB14-47DB-93DB-B5365C5AABE7} = {434DF810-5FDD-4F29-B828-545E31E1B97B}
+	EndGlobalSection
+EndGlobal

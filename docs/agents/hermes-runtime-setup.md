@@ -100,6 +100,29 @@ Playwright Chromium: ok
 browser: available
 ```
 
+For account registration and Proton Web verification, prefer Camofox Browser
+over ordinary headless Playwright when provider pages block automation or require
+more realistic browser fingerprints.
+
+Camofox target shape:
+
+```text
+service: Camofox Browser
+engine: Camoufox Firefox fork
+default URL: http://127.0.0.1:9377
+docs: /docs and /openapi.json
+runbook: /opt/ai-harness/repo/docs/operations/camofox-browser.md
+```
+
+Use it for:
+
+```text
+Proton Web email-code reading
+owned-account registration dashboards
+proxy-backed browser sessions
+cookie/session reuse
+```
+
 ## Telegram Tool Policy
 
 Telegram uses an operational whitelist rather than every available tool.

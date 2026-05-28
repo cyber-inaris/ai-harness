@@ -1,0 +1,7 @@
+[Unit]
+Description=AI Harness Heat Guard
+
+[Service]
+Type=oneshot
+EnvironmentFile=-/etc/ai-harness/env/heat-guard.env
+ExecStart=/usr/local/sbin/ai-harness-heat-guard

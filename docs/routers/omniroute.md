@@ -130,6 +130,11 @@ gpt-5.4-mini
 gpt-5.3-codex
 ```
 
+FreeModel keys are stored as separate OmniRoute provider connections for the
+same provider node. Do not replace exhausted keys when adding capacity; add a
+new connection with the next priority and let OmniRoute skip keys that are in a
+quota-exhausted state.
+
 After adding the provider connection in the OmniRoute dashboard, sync models from the server:
 
 ```bash

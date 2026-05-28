@@ -24,6 +24,8 @@ node_modules/
 venv/
 __pycache__/
 *.pyc
+bin/
+obj/
 
 # Benchmark/runtime output
 benchmarks/results/*
